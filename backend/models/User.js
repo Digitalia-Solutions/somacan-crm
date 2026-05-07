@@ -1,0 +1,78 @@
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
+
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
+    },
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  role: {
+    type: DataTypes.ENUM('customer', 'admin'),
+    allowNull: false,
+    defaultValue: 'customer',
+  },
+  addressLine1: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  addressLine2: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  city: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  postalCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  country: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'Maroc',
+  },
+  latitude: {
+    type: DataTypes.DECIMAL(10, 7),
+    allowNull: true,
+  },
+  longitude: {
+    type: DataTypes.DECIMAL(10, 7),
+    allowNull: true,
+  },
+  locationLabel: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+}, {
+  timestamps: true,
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+});
+
+export default User;
