@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
+import { buildImageStyle, buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,9 +18,28 @@ export default function StorySection({
   badgeText = "Élégance & Pureté",
   statValue = "5000+",
   statLabel = "Clients satisfaits",
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  ...styleProps
 }) {
   const containerRef = useRef(null);
   const imgRef = useRef(null);
+  const titleStyle = buildTypographyStyle(styleProps, 'title');
+  const paragraph1Style = buildTypographyStyle(styleProps, 'paragraph1');
+  const paragraph2Style = buildTypographyStyle(styleProps, 'paragraph2');
+  const imageStyle = buildImageStyle(styleProps, 'image');
+  const layoutStyle = buildSectionLayoutStyle({
+    minHeight: sectionMinHeight,
+    contentMaxWidth,
+    contentGap,
+    columnsTemplate,
+    alignItems,
+    justifyContent,
+  });
 
   const imageSrc = image ? resolveCmsAssetUrl(image) : defaultImage;
 
@@ -74,6 +94,7 @@ export default function StorySection({
     <section
       ref={containerRef}
       className="relative overflow-hidden bg-[#fcfaf7] py-28 md:py-40"
+      style={{ minHeight: sectionMinHeight || undefined }}
     >
       {/* Décoration fond */}
       <div className="pointer-events-none absolute inset-0 z-0">
@@ -81,8 +102,8 @@ export default function StorySection({
         <div className="absolute -right-20 bottom-0 h-[400px] w-[400px] rounded-full bg-gradient-to-tl from-[#043920]/5 to-transparent blur-[80px]" />
       </div>
 
-      <div className="section-padding relative z-10 mx-auto max-w-7xl">
-        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-28 xl:gap-40">
+      <div className="section-padding relative z-10 w-full" style={layoutStyle}>
+        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-28 xl:gap-40" style={layoutStyle}>
 
           {/* ── Colonne image ── */}
           <div className="story-image-wrap relative order-2 lg:order-1">
@@ -94,7 +115,7 @@ export default function StorySection({
                   src={imageSrc}
                   alt="Rituel Somacan"
                   className="h-[125%] w-full object-cover"
-                  style={{ top: '-12.5%', position: 'relative' }}
+                  style={{ top: '-12.5%', position: 'relative', ...imageStyle }}
                 />
                 {/* Overlay subtil */}
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 via-transparent to-transparent" />
@@ -137,7 +158,7 @@ export default function StorySection({
             </div>
 
             {/* Titre */}
-            <h2 className="story-reveal font-display text-5xl leading-[1.05] text-somacan-brand md:text-6xl xl:text-7xl mb-10">
+            <h2 className="story-reveal font-display text-5xl leading-[1.05] text-somacan-brand md:text-6xl xl:text-7xl mb-10" style={titleStyle}>
               {title}
             </h2>
 
@@ -146,10 +167,10 @@ export default function StorySection({
 
             {/* Paragraphes */}
             <div className="story-reveal space-y-6 mb-14">
-              <p className="text-lg font-light leading-relaxed text-stone-500">
+              <p className="text-lg font-light leading-relaxed text-stone-500" style={paragraph1Style}>
                 {paragraph1}
               </p>
-              <p className="text-base font-light leading-relaxed text-stone-400">
+              <p className="text-base font-light leading-relaxed text-stone-400" style={paragraph2Style}>
                 {paragraph2}
               </p>
             </div>

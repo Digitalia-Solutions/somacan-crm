@@ -7,6 +7,12 @@ import ResponsiveField from './fields/ResponsiveField';
 import WidgetTreeEditor from './WidgetTreeEditor';
 import StylePresetField from './fields/StylePresetField';
 
+const GLOBAL_LAYOUT_FIELDS = [
+  { name: 'fullWidth', label: 'Full width', type: 'switch' },
+  { name: 'contentWidth', label: 'Largeur du contenu', type: 'text', placeholder: '1200px' },
+  { name: 'sectionGap', label: 'Espace sous section', type: 'text', placeholder: '3rem' },
+];
+
 /**
  * SectionFormRenderer — renders a 3-tab form for a given section type.
  */
@@ -119,6 +125,18 @@ export default function SectionFormRenderer({
               value={settings?.presetId}
               onChange={(presetId) => handleSettingsFieldChange('presetId', presetId)}
             />
+
+            <div className="grid gap-5 pt-6 border-t border-stone-100">
+              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Largeur & Conteneur</p>
+              {GLOBAL_LAYOUT_FIELDS.map((field) => (
+                <FieldRenderer
+                  key={field.name}
+                  field={field}
+                  value={settings?.[field.name]}
+                  onChange={(value) => handleSettingsFieldChange(field.name, value)}
+                />
+              ))}
+            </div>
 
             {def.settingsFields.length > 0 && (
               <div className="grid gap-5 pt-6 border-t border-stone-100">

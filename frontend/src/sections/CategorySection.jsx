@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { getCategories } from '../lib/api';
 import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
+import { buildImageStyle, buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 /**
  * Returns grid container class and a per-card class getter based on category count.
@@ -12,7 +13,7 @@ import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
  * n=3 : 2 cols — first card col-span-2 on its own row, 2 small cards on next row
  *        → actually use col-span-1 big + stack: use 3-col trick: [2+1] layout
  *        Implementation: cols-3, first card col-span-2 row-span-1, rest col-span-1
- * n=4 : 2 cols md:4 cols, first card col-span-2 row-span-2 (classic layout)
+ * n=4 : 4 equal cards on one line on desktop
  * n=5 : same as 4 but 5th card fills the remaining slot
  * n=6 : uniform 3×2 grid
  */
@@ -41,11 +42,11 @@ function getGridConfig(n) {
       };
 
     case 4:
-      // Classic: 4-col grid, first card 2×2, rest 1×1
+      // 4 equal cards on desktop
       return {
-        gridClass: 'grid grid-cols-2 md:grid-cols-4 grid-rows-2',
-        getCardClass: (i) => i === 0 ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1',
-        isBigCard: (i) => i === 0,
+        gridClass: 'grid grid-cols-2 md:grid-cols-4',
+        getCardClass: () => '',
+        isBigCard: () => false,
       };
 
     case 5:
@@ -67,9 +68,36 @@ function getGridConfig(n) {
   }
 }
 
-export default function CategorySection({ title, subtitle, categoryIds, showAllLink = '/shop' }) {
+export default function CategorySection({
+  title,
+  subtitle,
+  categoryIds,
+  showAllLink = '/shop',
+  showAllLabel,
+  cardHeight,
+  gridGap,
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  ...styleProps
+}) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const titleStyle = buildTypographyStyle(styleProps, 'title');
+  const subtitleStyle = buildTypographyStyle(styleProps, 'subtitle');
+  const cardTitleStyle = buildTypographyStyle(styleProps, 'cardTitle');
+  const cardImageStyle = buildImageStyle(styleProps, 'cardImage');
+  const layoutStyle = buildSectionLayoutStyle({
+    minHeight: sectionMinHeight,
+    contentMaxWidth,
+    contentGap,
+    columnsTemplate,
+    alignItems,
+    justifyContent,
+  });
 
   const categoryIdsKey = JSON.stringify(categoryIds);
 
@@ -93,17 +121,17 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
   const { gridClass, getCardClass, isBigCard } = getGridConfig(categories.length);
 
   return (
-    <section className="py-24 bg-[#fcfaf7]">
-      <div className="section-padding max-w-[100rem] mx-auto">
+    <section className="py-24 bg-[#fcfaf7]" style={{ minHeight: sectionMinHeight || undefined }}>
+      <div className="section-padding w-full" style={layoutStyle}>
 
         {/* Header */}
         <header className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400 mb-5 flex items-center gap-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400 mb-5 flex items-center gap-4" style={subtitleStyle}>
               <span className="w-8 h-px bg-stone-200" />
               {subtitle || 'Nos Univers'}
             </p>
-            <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-somacan-brand leading-tight">
+            <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-somacan-brand leading-tight" style={titleStyle}>
               {title || (
                 <>Explorer par <br />
                   <span className="italic text-stone-400 font-light">catégorie.</span>
@@ -116,7 +144,7 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
               to={showAllLink}
               className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900 border-b border-stone-200 pb-2 hover:border-stone-900 transition-all flex items-center gap-3 self-start md:self-auto"
             >
-              Voir tout <ArrowRight size={14} strokeWidth={1} />
+              {showAllLabel || 'Voir tout'} <ArrowRight size={14} strokeWidth={1} />
             </Link>
           )}
         </header>
@@ -128,8 +156,8 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
           </div>
         ) : (
           <div
-            className={`${gridClass} gap-3 md:gap-4`}
-            style={{ height: 'clamp(360px, 60vw, 500px)' }}
+            className={gridClass}
+            style={{ height: cardHeight || 'clamp(360px, 60vw, 500px)', gap: gridGap || '1rem' }}
           >
             {categories.map((cat, i) => {
               const big = isBigCard(i);
@@ -145,6 +173,7 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
                       src={resolveCmsAssetUrl(cat.image)}
                       alt={cat.name}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.07]"
+                      style={cardImageStyle}
                     />
                   ) : (
                     <div className="absolute inset-0 bg-stone-200" />
@@ -160,7 +189,7 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
                     </p>
                     <h3 className={`font-display text-white leading-[1] mb-3 transition-transform duration-500 group-hover:-translate-y-1 ${
                       big ? 'text-4xl md:text-5xl lg:text-6xl' : 'text-2xl md:text-3xl'
-                    }`}>
+                    }`} style={cardTitleStyle}>
                       {cat.name}
                     </h3>
                     <div className="flex items-center justify-between">

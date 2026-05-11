@@ -117,6 +117,8 @@ function renderNewFormat(section) {
   const wrapperStyle = {
     ...(settings.backgroundColor && { backgroundColor: settings.backgroundColor }),
   };
+  const contentWidth = settings.contentWidth || '';
+  const isFullWidth = settings.fullWidth === true;
 
   // Handle responsive visibility: if mobile is hidden, add tailwind classes
   const normalizedResponsive = normalizeResponsiveConfig(responsive);
@@ -137,7 +139,15 @@ function renderNewFormat(section) {
       style={finalStyle}
       dataTheme={content.theme || 'light'}
     >
-      <Component {...content} />
+      <div
+        style={{
+          width: '100%',
+          maxWidth: !isFullWidth && contentWidth ? contentWidth : undefined,
+          margin: !isFullWidth && contentWidth ? '0 auto' : undefined,
+        }}
+      >
+        <Component {...content} settings={settings} />
+      </div>
     </AnimatedSection>
   );
 }

@@ -41,9 +41,7 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
     if (templateConfig.maxContentWidth) {
       style['--cms-page-max-width'] = templateConfig.maxContentWidth;
     }
-    if (templateConfig.baseSpacing) {
-      style['--cms-page-base-spacing'] = templateConfig.baseSpacing;
-    }
+    style['--cms-page-base-spacing'] = templateConfig.baseSpacing || '3rem';
     return style;
   }, [page.templateConfig]);
 
@@ -52,6 +50,7 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
     const isLocked = section.templateLock && !previewMode;
     const isInactive = section.isActive === false;
 
+    const sectionSpacing = section?.settings?.sectionGap || 'var(--cms-page-base-spacing)';
     const wrapperClasses = [
       'cms-page-section',
       isInactive ? 'cms-page-section--inactive' : '',
@@ -65,7 +64,10 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
         className={wrapperClasses}
         data-section-id={section.id}
         data-section-type={section.type}
-        style={isInactive ? { opacity: 0.4, pointerEvents: 'none' } : undefined}
+        style={{
+          marginBottom: sectionSpacing,
+          ...(isInactive ? { opacity: 0.4, pointerEvents: 'none' } : {}),
+        }}
       >
         <SectionRenderer section={section} />
       </div>
@@ -80,6 +82,7 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
           onClick={() => onSectionClick(section)}
           data-section-id={section.id}
           data-section-type={section.type}
+          style={{ marginBottom: sectionSpacing }}
         >
           <SectionRenderer section={section} />
         </button>

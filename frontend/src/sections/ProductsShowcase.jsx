@@ -6,13 +6,41 @@ import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ui/ProductCard';
+import { buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ProductsShowcase({ eyebrow, title, subtitle, ctaText, ctaLink }) {
+export default function ProductsShowcase({
+  eyebrow,
+  title,
+  subtitle,
+  ctaText,
+  ctaLink,
+  maxItems,
+  trackGap,
+  cardWidth,
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  ...styleProps
+}) {
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const { products, loading } = useProducts({ featured: true });
+  const titleStyle = buildTypographyStyle(styleProps, 'title');
+  const subtitleStyle = buildTypographyStyle(styleProps, 'subtitle');
+  const layoutStyle = buildSectionLayoutStyle({
+    minHeight: sectionMinHeight,
+    contentMaxWidth,
+    contentGap,
+    columnsTemplate,
+    alignItems,
+    justifyContent,
+  });
+  const visibleProducts = Number(maxItems) > 0 ? products.slice(0, Number(maxItems)) : products;
 
   useGSAP(() => {
     if (loading || products.length === 0) return;
@@ -42,17 +70,17 @@ export default function ProductsShowcase({ eyebrow, title, subtitle, ctaText, ct
   }, { scope: containerRef, dependencies: [loading, products.length] });
 
   return (
-    <section ref={containerRef} className="py-24 bg-[#fcfaf7] overflow-hidden">
-      <div className="section-padding">
+    <section ref={containerRef} className="py-24 bg-[#fcfaf7] overflow-hidden" style={{ minHeight: sectionMinHeight || undefined }}>
+      <div className="section-padding" style={layoutStyle}>
         <header className="showcase-header flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400 mb-5 flex items-center gap-3">
               <span className="w-6 h-px bg-stone-300" />
               {eyebrow || 'Sélection Exclusive'}
             </p>
-            <h2 className="font-display text-4xl md:text-6xl text-somacan-brand leading-tight">
+            <h2 className="font-display text-4xl md:text-6xl text-somacan-brand leading-tight" style={titleStyle}>
               {title || "Les Essentiels"} <br />
-              <span className="italic font-light text-gold-500">{subtitle || "du moment."}</span>
+              <span className="italic font-light text-gold-500" style={subtitleStyle}>{subtitle || "du moment."}</span>
             </h2>
           </div>
           <Link
@@ -67,8 +95,8 @@ export default function ProductsShowcase({ eyebrow, title, subtitle, ctaText, ct
       {/* Horizontal scroll track */}
       <div
         ref={trackRef}
-        className="flex gap-6 overflow-x-auto pb-4 px-6 md:px-12 lg:px-24 xl:px-40 scrollbar-hide snap-x snap-mandatory"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        className="flex overflow-x-auto pb-4 px-6 md:px-12 lg:px-24 xl:px-40 scrollbar-hide snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', gap: trackGap || '1.5rem' }}
       >
         {loading
           ? [...Array(4)].map((_, i) => (
@@ -78,8 +106,12 @@ export default function ProductsShowcase({ eyebrow, title, subtitle, ctaText, ct
                 <div className="h-5 w-2/3 bg-stone-200 mx-auto animate-pulse" />
               </div>
             ))
-          : products.map((product) => (
-              <div key={product.id || product._id} className="product-track-item shrink-0 w-64 md:w-72 snap-start">
+          : visibleProducts.map((product) => (
+              <div
+                key={product.id || product._id}
+                className="product-track-item shrink-0 w-64 md:w-72 snap-start"
+                style={{ width: cardWidth || '18rem' }}
+              >
                 <ProductCard product={product} variant="showcase" className="w-full" />
               </div>
             ))}

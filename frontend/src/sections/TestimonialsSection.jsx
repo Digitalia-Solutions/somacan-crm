@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/pagination';
+import { buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,9 +50,41 @@ function Stars() {
   );
 }
 
-export default function TestimonialsSection({ title, subtitle, items }) {
+export default function TestimonialsSection({
+  title,
+  subtitle,
+  items,
+  autoplay = true,
+  autoplayDelay = 4800,
+  pauseOnHover = true,
+  loop = true,
+  speed = 1000,
+  showPagination = true,
+  cardMaxWidth,
+  cardPaddingX,
+  cardPaddingY,
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  ...styleProps
+}) {
   const currentTestimonials = items && items.length > 0 ? items : testimonials;
   const containerRef = useRef(null);
+  const titleStyle = buildTypographyStyle(styleProps, 'title');
+  const subtitleStyle = buildTypographyStyle(styleProps, 'subtitle');
+  const quoteStyle = buildTypographyStyle(styleProps, 'quote');
+  const authorStyle = buildTypographyStyle(styleProps, 'author');
+  const layoutStyle = buildSectionLayoutStyle({
+    minHeight: sectionMinHeight,
+    contentMaxWidth,
+    contentGap,
+    columnsTemplate,
+    alignItems,
+    justifyContent,
+  });
 
   useGSAP(() => {
     gsap.from('.testimonials-reveal', {
@@ -68,16 +101,16 @@ export default function TestimonialsSection({ title, subtitle, items }) {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className="overflow-hidden bg-[linear-gradient(180deg,#fcfaf7_0%,#f3eee4_100%)] py-24">
-      <div className="section-padding mx-auto max-w-6xl">
+    <section ref={containerRef} className="overflow-hidden bg-[linear-gradient(180deg,#fcfaf7_0%,#f3eee4_100%)] py-24" style={{ minHeight: sectionMinHeight || undefined }}>
+      <div className="section-padding w-full" style={layoutStyle}>
         <div className="testimonials-reveal mb-14 text-center">
           <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400">
             Echos de Beaute
           </p>
-          <h2 className="font-display text-5xl leading-[0.95] text-somacan-brand md:text-7xl">
+          <h2 className="font-display text-5xl leading-[0.95] text-somacan-brand md:text-7xl" style={titleStyle}>
             {title || "Ce qu'elles disent"}
             <br />
-            <span className="font-light italic text-gold-500">{subtitle || "de Somacan."}</span>
+            <span className="font-light italic text-gold-500" style={subtitleStyle}>{subtitle || "de Somacan."}</span>
           </h2>
         </div>
 
@@ -86,34 +119,41 @@ export default function TestimonialsSection({ title, subtitle, items }) {
           <Swiper
             modules={[Autoplay, EffectFade, Pagination]}
             slidesPerView={1}
-            loop
+            loop={loop}
             effect="fade"
             fadeEffect={{ crossFade: true }}
-            speed={1000}
-            autoplay={{
-              delay: 4800,
+            speed={Number(speed) || 1000}
+            autoplay={autoplay ? {
+              delay: Number(autoplayDelay) || 4800,
               disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            pagination={{ clickable: true }}
+              pauseOnMouseEnter: pauseOnHover,
+            } : false}
+            pagination={showPagination ? { clickable: true } : false}
             className="somacan-testimonials !overflow-visible"
           >
             {currentTestimonials.map((item, idx) => (
               <SwiperSlide key={`${item.author}-${idx}`}>
-                <article className="relative mx-auto max-w-4xl overflow-hidden rounded-[2.25rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(252,250,247,0.98)_100%)] px-8 py-12 text-center shadow-[0_25px_80px_rgba(28,25,23,0.08)] md:px-18 md:py-16">
+                <article
+                  className="relative mx-auto overflow-hidden rounded-[2.25rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.94)_0%,rgba(252,250,247,0.98)_100%)] text-center shadow-[0_25px_80px_rgba(28,25,23,0.08)]"
+                  style={{
+                    maxWidth: cardMaxWidth || '56rem',
+                    paddingInline: cardPaddingX || '2rem',
+                    paddingBlock: cardPaddingY || '3rem',
+                  }}
+                >
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c9aa73]/60 to-transparent" />
                   <div className="pointer-events-none absolute left-8 top-6 font-display text-8xl leading-none text-[#c9aa73]/18 md:text-9xl">
                     "
                   </div>
                   <div className="relative z-10">
                     <Stars />
-                    <p className="mx-auto mt-8 max-w-3xl font-display text-[1.6rem] leading-[1.08] text-somacan-brand md:text-[1.6rem]">
+                    <p className="mx-auto mt-8 max-w-3xl font-display text-[1.6rem] leading-[1.08] text-somacan-brand md:text-[1.6rem]" style={quoteStyle}>
                       {item.quote}
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-4">
                       <div className="h-px w-10 bg-[#c9aa73]/35" />
                       <div>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-stone-900">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-stone-900" style={authorStyle}>
                           {item.author}
                         </p>
                         <p className="mt-2 text-[11px] text-stone-400">{item.city}</p>

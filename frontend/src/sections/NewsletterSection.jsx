@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { subscribeNewsletter } from '../lib/api';
+import { buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 export default function NewsletterSection({
   eyebrow,
@@ -13,10 +14,28 @@ export default function NewsletterSection({
   successEyebrow,
   successMessage,
   disclaimer,
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  ...styleProps
 }) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [errorMsg, setErrorMsg] = useState('');
+  const titleStyle = buildTypographyStyle(styleProps, 'title');
+  const subtitleStyle = buildTypographyStyle(styleProps, 'subtitle');
+  const descriptionStyle = buildTypographyStyle(styleProps, 'description');
+  const layoutStyle = buildSectionLayoutStyle({
+    minHeight: sectionMinHeight,
+    contentMaxWidth,
+    contentGap,
+    columnsTemplate,
+    alignItems,
+    justifyContent,
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,21 +57,21 @@ export default function NewsletterSection({
   };
 
   return (
-    <section className="py-28 bg-stone-900 overflow-hidden relative">
+    <section className="py-28 bg-stone-900 overflow-hidden relative" style={{ minHeight: sectionMinHeight || undefined }}>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-stone-700/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-stone-700/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="section-padding max-w-[88rem] mx-auto text-center relative z-10">
+      <div className="section-padding w-full text-center relative z-10" style={layoutStyle}>
         <p className="nl-content text-[10px] font-bold uppercase tracking-[0.4em] text-stone-500 mb-8">
           {eyebrow || 'Cercle Privé'}
         </p>
 
-        <h2 className="nl-content font-display text-5xl md:text-8xl text-white leading-tight mb-8">
+        <h2 className="nl-content font-display text-5xl md:text-8xl text-white leading-tight mb-8" style={titleStyle}>
           {title || "L'excellence,"} <br />
-          <span className="italic text-stone-500 font-light">{subtitle || 'en avant-première.'}</span>
+          <span className="italic text-stone-500 font-light" style={subtitleStyle}>{subtitle || 'en avant-première.'}</span>
         </h2>
 
-        <p className="nl-content text-lg text-stone-400 font-light leading-relaxed mb-16 max-w-lg mx-auto">
+        <p className="nl-content text-lg text-stone-400 font-light leading-relaxed mb-16 max-w-lg mx-auto" style={descriptionStyle}>
           {description || 'Rejoignez notre cercle et accédez en exclusivité aux nouvelles collections, rituels secrets et offres réservées à nos membres.'}
         </p>
 

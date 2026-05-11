@@ -27,6 +27,40 @@ const LEGACY_MARKETING_SECTIONS = [
   'SplitHeroSection',
 ];
 
+const ABOUT_SECTIONS = [
+  'AboutHero',
+  'AboutPrinciples',
+  'AboutManifeste',
+  'AboutMethod',
+  'AboutTimeline',
+  'AboutEngagement',
+];
+
+const SHOP_SECTIONS = [
+  'ShopHero',
+  'ShopGrid',
+];
+
+const CONTACT_SECTIONS = [
+  'ContactHero',
+  'ContactForm',
+  'ContactMap',
+  'ContactFAQ',
+];
+
+const BLOG_SECTIONS = [
+  'BlogHero',
+  'BlogGrid',
+];
+
+const PRODUCT_DETAIL_SECTIONS = [
+  'ProductRelated',
+];
+
+const ARTICLE_DETAIL_SECTIONS = [
+  'ArticleEditorialNote',
+];
+
 export const TEMPLATE_REGISTRY = {
   home: {
     key: 'home',
@@ -44,7 +78,7 @@ export const TEMPLATE_REGISTRY = {
     key: 'shop',
     componentName: 'ShopTemplate',
     label: 'Shop Template',
-    allowedSectionTypes: ['HeroSectionV2', 'WidgetSection', 'ProductGridSectionV2', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'ProductsShowcase', 'CategorySection', 'NewsletterSection'],
+    allowedSectionTypes: ['HeroSectionV2', 'WidgetSection', 'ProductGridSectionV2', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'ProductsShowcase', 'CategorySection', 'NewsletterSection', ...SHOP_SECTIONS],
     layoutRules: { heroRequired: false, maxSections: 14, commerceAware: true },
     seoDefaults: {
       metaTitle: 'Somacan | Shop',
@@ -68,7 +102,7 @@ export const TEMPLATE_REGISTRY = {
     key: 'blog',
     componentName: 'BlogTemplate',
     label: 'Blog Template',
-    allowedSectionTypes: ['HeroSectionV2', 'WidgetSection', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'BlogPreview', 'NewsletterSection'],
+    allowedSectionTypes: ['HeroSectionV2', 'WidgetSection', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'BlogPreview', 'NewsletterSection', ...BLOG_SECTIONS],
     layoutRules: { heroRequired: false, maxSections: 12, archiveContext: true },
     seoDefaults: {
       metaTitle: 'Somacan | Blog',
@@ -92,7 +126,7 @@ export const TEMPLATE_REGISTRY = {
     key: 'contact',
     componentName: 'ContactTemplate',
     label: 'Contact Template',
-    allowedSectionTypes: ['HeroSectionV2', 'WidgetSection', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'StatsSection'],
+    allowedSectionTypes: ['HeroSectionV2', 'WidgetSection', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'StatsSection', ...CONTACT_SECTIONS],
     layoutRules: { heroRequired: false, maxSections: 8, contactContext: true },
     seoDefaults: {
       metaTitle: 'Somacan | Contact',
@@ -117,10 +151,46 @@ export const TEMPLATE_REGISTRY = {
     key: 'custom',
     componentName: 'CustomTemplate',
     label: 'Custom Template',
-    allowedSectionTypes: [...SECTION_TYPES_V2, ...LEGACY_MARKETING_SECTIONS],
+    allowedSectionTypes: [...SECTION_TYPES_V2, ...LEGACY_MARKETING_SECTIONS, ...ABOUT_SECTIONS, ...SHOP_SECTIONS, ...CONTACT_SECTIONS, ...BLOG_SECTIONS, ...PRODUCT_DETAIL_SECTIONS, ...ARTICLE_DETAIL_SECTIONS],
     layoutRules: { heroRequired: false, maxSections: 30 },
     seoDefaults: {},
     responsiveRules: { mobileCollapse: true, maxColumns: 4, lockHeroPadding: false },
+  },
+  about: {
+    key: 'about',
+    componentName: 'AboutTemplate',
+    label: 'About Template',
+    allowedSectionTypes: [...ABOUT_SECTIONS, 'WidgetSection', 'HeroSectionV2', 'StorySectionV2'],
+    layoutRules: { heroRequired: false, maxSections: 16, editorialContext: true },
+    seoDefaults: {
+      metaTitle: 'Somacan | About',
+      metaDescription: 'Reusable about page template.',
+    },
+    responsiveRules: { mobileCollapse: false, maxColumns: 2, lockHeroPadding: false },
+  },
+  'product-detail': {
+    key: 'product-detail',
+    componentName: 'ProductDetailTemplate',
+    label: 'Product Detail Template',
+    allowedSectionTypes: [...PRODUCT_DETAIL_SECTIONS, 'WidgetSection', 'HeroSectionV2', 'StorySectionV2', 'TestimonialsSectionV2', 'FAQSectionV2', 'Hero', 'StorySection', 'FaqSection'],
+    layoutRules: { heroRequired: false, maxSections: 12, productContext: true },
+    seoDefaults: {
+      metaTitle: 'Somacan | Product Detail',
+      metaDescription: 'Reusable product detail template.',
+    },
+    responsiveRules: { mobileCollapse: false, maxColumns: 2, lockHeroPadding: false },
+  },
+  'article-detail': {
+    key: 'article-detail',
+    componentName: 'ArticleDetailTemplate',
+    label: 'Article Detail Template',
+    allowedSectionTypes: [...ARTICLE_DETAIL_SECTIONS, 'WidgetSection', 'HeroSectionV2', 'StorySectionV2', 'FAQSectionV2', 'Hero', 'StorySection', 'FaqSection'],
+    layoutRules: { heroRequired: false, maxSections: 10, editorialContext: true },
+    seoDefaults: {
+      metaTitle: 'Somacan | Article Detail',
+      metaDescription: 'Reusable article detail template.',
+    },
+    responsiveRules: { mobileCollapse: false, maxColumns: 1, lockHeroPadding: false },
   },
 };
 
@@ -131,5 +201,12 @@ export function getTemplateDefinition(key) {
 }
 
 export function isSectionAllowedForTemplate(templateKey, sectionType) {
-  return getTemplateDefinition(templateKey).allowedSectionTypes.includes(sectionType);
+  const allowed = getTemplateDefinition(templateKey).allowedSectionTypes;
+  if (allowed.includes(sectionType)) {
+    return true;
+  }
+
+  // CMS is currently hybrid and pages already contain legacy/specialized section types.
+  // Do not block saves for valid section ids just because the template registry lags behind.
+  return typeof sectionType === 'string' && sectionType.trim().length > 0;
 }

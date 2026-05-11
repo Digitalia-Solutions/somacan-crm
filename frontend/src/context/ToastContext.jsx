@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, forwardRef } from 'react';
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -48,7 +48,7 @@ export function ToastProvider({ children }) {
   );
 }
 
-function ToastItem({ toast, onRemove }) {
+const ToastItem = forwardRef(function ToastItem({ toast, onRemove }, ref) {
   const icons = {
     success: <CheckCircle2 className="text-emerald-500" size={18} />,
     error: <AlertCircle className="text-red-500" size={18} />,
@@ -65,6 +65,7 @@ function ToastItem({ toast, onRemove }) {
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, y: 20, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -81,7 +82,7 @@ function ToastItem({ toast, onRemove }) {
       </button>
     </motion.div>
   );
-}
+});
 
 export const useToast = () => {
   const context = useContext(ToastContext);

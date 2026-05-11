@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
+import { buildImageStyle, buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 export default function OfferSection({
   eyebrow,
@@ -14,6 +15,13 @@ export default function OfferSection({
   buttonText,
   buttonLink,
   badgeText,
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  ...styleProps
 }) {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -22,19 +30,31 @@ export default function OfferSection({
   });
 
   const imgY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  const titleStyle = buildTypographyStyle(styleProps, 'title');
+  const subtitleStyle = buildTypographyStyle(styleProps, 'subtitle');
+  const descriptionStyle = buildTypographyStyle(styleProps, 'description');
+  const imageStyle = buildImageStyle(styleProps, 'image');
+  const layoutStyle = buildSectionLayoutStyle({
+    minHeight: sectionMinHeight,
+    contentMaxWidth,
+    contentGap,
+    columnsTemplate,
+    alignItems,
+    justifyContent,
+  });
 
   return (
-    <section ref={containerRef} className="py-24 bg-[#fcfaf7] overflow-hidden relative">
-      <div className="section-padding max-w-[100rem] mx-auto">
-        <div className="grid lg:grid-cols-2 gap-24 lg:gap-40 items-center">
+    <section ref={containerRef} className="py-24 bg-[#fcfaf7] overflow-hidden relative" style={{ minHeight: sectionMinHeight || undefined }}>
+      <div className="section-padding w-full" style={layoutStyle}>
+        <div className="grid lg:grid-cols-2 gap-24 lg:gap-40 items-center" style={layoutStyle}>
           
           <div className="relative group">
             <div className="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl">
               <motion.img
-                style={{ y: imgY }}
                 src={resolveCmsAssetUrl(image) || resolveCmsAssetUrl('/asset/ChatGPT Image 29 avr. 2026, 12_21_25.png')}
                 alt={imageAlt || 'Rituel Somacan'}
                 className="w-full h-[120%] object-cover transition-transform duration-1000 group-hover:scale-105"
+                style={{ y: imgY, ...imageStyle }}
               />
               <div className="absolute inset-0 bg-stone-900/5 mix-blend-multiply" />
             </div>
@@ -72,13 +92,13 @@ export default function OfferSection({
                 {eyebrow || 'Offre Exceptionnelle'}
               </p>
               
-              <h2 className="font-display text-5xl md:text-8xl text-somacan-brand leading-tight">
+              <h2 className="font-display text-5xl md:text-8xl text-somacan-brand leading-tight" style={titleStyle}>
                 {title || "L’Éclat d'un"} <br />
-                <span className="italic text-stone-400 font-light">{subtitle || "Rituel Rare."}</span>
+                <span className="italic text-stone-400 font-light" style={subtitleStyle}>{subtitle || "Rituel Rare."}</span>
               </h2>
             </header>
 
-            <p className="text-xl text-stone-500 font-light leading-relaxed max-w-md">
+            <p className="text-xl text-stone-500 font-light leading-relaxed max-w-md" style={descriptionStyle}>
               {description || "Plus qu'un simple soin, une invitation au voyage intérieur. Profitez de notre rituel corps signature, une édition limitée conçue pour l'apaisement absolu."}
             </p>
 

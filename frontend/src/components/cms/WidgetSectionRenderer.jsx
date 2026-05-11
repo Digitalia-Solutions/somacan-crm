@@ -26,7 +26,9 @@ export default function WidgetSectionRenderer({ section }) {
   const sectionStyle = {
     ...resolvePresetStyle('section', section.settings?.presetId, section.settings?.styles),
     ...(section.settings?.backgroundColor ? { backgroundColor: section.settings.backgroundColor } : {}),
-    ...(section.settings?.contentWidth ? { ['--cms-content-width']: section.settings.contentWidth } : {}),
+    ...((section.settings?.contentWidth || section.settings?.fullWidth === true)
+      ? { ['--cms-content-width']: section.settings?.fullWidth === true ? '100%' : section.settings.contentWidth }
+      : {}),
     ...buildResponsiveStyleVariables(section.responsive, `--${classToken}`),
     ...getResponsiveInlineStyle(section.responsive),
   };
@@ -46,7 +48,7 @@ export default function WidgetSectionRenderer({ section }) {
   );
 
   const baseStylesheet = `${buildResponsiveStylesheet(classToken, section.responsive, `--${classToken}`)}
-.${classToken}__inner { width: min(100%, var(--cms-content-width, 1200px)); margin: 0 auto; }
+.${classToken}__inner { width: min(100%, var(--cms-content-width, 1200px)); max-width: var(--cms-content-width, 1200px); margin: 0 auto; }
 ${gridStylesheet}`;
 
   // GSAP stagger for widget tree if animation type is GSAP stagger variant

@@ -277,6 +277,16 @@ export default function PageBuilder2() {
     template: selectedPage?.template || 'custom',
   }), [selectedPage, sections]);
 
+  const handleDraftChange = useCallback((patch) => {
+    if (!editingSection?.id) return;
+    pageState.updateDraftSection(editingSection.id, patch);
+  }, [editingSection?.id, pageState]);
+
+  const handleResetDraft = useCallback(() => {
+    if (!editingSection?.id) return;
+    pageState.resetDraftSection(editingSection.id);
+  }, [editingSection?.id, pageState]);
+
   return (
     <div className={`grid gap-8 min-h-0 ${previewOpen ? 'lg:grid-cols-[240px_minmax(0,1fr)_minmax(0,1fr)]' : 'lg:grid-cols-[280px_minmax(0,1fr)]'} transition-all duration-300`}>
       {/* Pages Sidebar */}
@@ -615,8 +625,8 @@ export default function PageBuilder2() {
           <EditSectionDrawer
             section={editingSection}
             pageSections={sections}
-            onDraftChange={(patch) => pageState.updateDraftSection(editingSection.id, patch)}
-            onResetDraft={() => pageState.resetDraftSection(editingSection.id)}
+            onDraftChange={handleDraftChange}
+            onResetDraft={handleResetDraft}
             onClose={() => setEditingSection(null)}
             onSave={handleSaveSection}
             dirtyRef={drawerDirtyRef}
@@ -851,6 +861,8 @@ function EditSectionDrawer({ section, pageSections, onDraftChange, onResetDraft,
   const { warning, success, info } = useToast();
   const DRAFT_KEY = `cms_draft_${section.id}`;
   const VERSIONS_KEY = `cms_versions_${section.id}`;
+  const onDraftChangeRef = useRef(onDraftChange);
+  const onResetDraftRef = useRef(onResetDraft);
 
   // ── Core state ──────────────────────────────────────────────
   const [content, setContent] = useState(section.content || {});
@@ -861,6 +873,14 @@ function EditSectionDrawer({ section, pageSections, onDraftChange, onResetDraft,
   const [saving, setSaving] = useState(false);
   const [previewDevice, setPreviewDevice] = useState('desktop');
   const [zoom, setZoom] = useState(100);
+
+  useEffect(() => {
+    onDraftChangeRef.current = onDraftChange;
+  }, [onDraftChange]);
+
+  useEffect(() => {
+    onResetDraftRef.current = onResetDraft;
+  }, [onResetDraft]);
 
   // ── History (undo/redo) ──────────────────────────────────────
   const historyRef = useRef([]);
@@ -954,8 +974,8 @@ function EditSectionDrawer({ section, pageSections, onDraftChange, onResetDraft,
   }, [isDirty]);
 
   useEffect(() => {
-    onDraftChange({ content, settings, animation, responsive, widgetTree });
-  }, [content, settings, animation, responsive, widgetTree, onDraftChange]);
+    onDraftChangeRef.current?.({ content, settings, animation, responsive, widgetTree });
+  }, [content, settings, animation, responsive, widgetTree]);
 
   // ── Autosave draft ───────────────────────────────────────────
   const [hasDraftRecovery, setHasDraftRecovery] = useState(false);
@@ -1123,7 +1143,7 @@ function EditSectionDrawer({ section, pageSections, onDraftChange, onResetDraft,
                  </button>
                ))}
              </div>
-             <Button variant="secondary" onClick={() => { onResetDraft(); success('Modifications annulées'); }} icon={RotateCcw}>Réinitialiser</Button>
+             <Button variant="secondary" onClick={() => { onResetDraftRef.current?.(); success('Modifications annulées'); }} icon={RotateCcw}>Réinitialiser</Button>
              <Button variant="primary" loading={saving} onClick={handleSave} icon={Save}>Enregistrer</Button>
           </div>
         </header>

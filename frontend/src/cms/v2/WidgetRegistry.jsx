@@ -79,9 +79,19 @@ function WidgetShell({ widget, scope = 'typography', className = '', children })
 
 function HeadingWidgetRenderer({ widget }) {
   const Tag = widget.props?.level || 'h2';
+  const headingStyle = {
+    color: widget.props?.color || undefined,
+    fontSize: widget.props?.fontSize || undefined,
+    fontFamily: widget.props?.fontFamily || undefined,
+    fontWeight: widget.props?.fontWeight || undefined,
+    textAlign: widget.props?.textAlign || undefined,
+  };
   return (
     <WidgetShell widget={widget}>
-      <Tag className="font-display text-balance text-[clamp(2rem,4vw,4rem)] font-semibold tracking-[-0.04em] text-stone-900">
+      <Tag
+        className="font-display text-balance text-[clamp(2rem,4vw,4rem)] font-semibold tracking-[-0.04em] text-stone-900"
+        style={headingStyle}
+      >
         {widget.props?.text}
       </Tag>
     </WidgetShell>
@@ -89,10 +99,19 @@ function HeadingWidgetRenderer({ widget }) {
 }
 
 function ParagraphWidgetRenderer({ widget }) {
+  const paragraphStyle = {
+    color: widget.props?.color || undefined,
+    fontSize: widget.props?.fontSize || undefined,
+    fontFamily: widget.props?.fontFamily || undefined,
+    fontWeight: widget.props?.fontWeight || undefined,
+    maxWidth: widget.props?.maxWidth || undefined,
+    textAlign: widget.props?.textAlign || undefined,
+  };
   return (
     <WidgetShell widget={widget}>
       <div
         className="max-w-3xl text-base leading-7 text-stone-600"
+        style={paragraphStyle}
         dangerouslySetInnerHTML={{ __html: widget.props?.text || '' }}
       />
     </WidgetShell>
@@ -101,9 +120,14 @@ function ParagraphWidgetRenderer({ widget }) {
 
 function ButtonWidgetRenderer({ widget }) {
   const href = widget.props?.href || '#';
+  const buttonStyle = {
+    fontSize: widget.props?.fontSize || undefined,
+    fontFamily: widget.props?.fontFamily || undefined,
+    fontWeight: widget.props?.fontWeight || undefined,
+  };
   return (
     <WidgetShell widget={widget} scope="button" className="inline-flex">
-      <Link to={href} className="inline-flex items-center justify-center text-sm font-semibold">
+      <Link to={href} className="inline-flex items-center justify-center text-sm font-semibold" style={buttonStyle}>
         {widget.props?.label || 'Button'}
       </Link>
     </WidgetShell>
@@ -124,8 +148,24 @@ function ImageWidgetRenderer({ widget }) {
 
   return (
     <WidgetShell widget={widget}>
-      <figure className="overflow-hidden rounded-[1.5rem]">
-        <img src={widget.props.src} alt={widget.props.alt || ''} className="h-full w-full object-cover" />
+      <figure
+        className="overflow-hidden rounded-[1.5rem]"
+        style={{
+          width: widget.props?.width || undefined,
+          height: widget.props?.height || undefined,
+          aspectRatio: widget.props?.aspectRatio || undefined,
+          borderRadius: widget.props?.borderRadius || undefined,
+        }}
+      >
+        <img
+          src={widget.props.src}
+          alt={widget.props.alt || ''}
+          className="h-full w-full object-cover"
+          style={{
+            objectFit: widget.props?.objectFit || undefined,
+            borderRadius: widget.props?.borderRadius || undefined,
+          }}
+        />
         {widget.props?.caption ? (
           <figcaption className="mt-3 text-sm text-stone-500">{widget.props.caption}</figcaption>
         ) : null}
@@ -165,13 +205,37 @@ function ProductCardWidgetRenderer({ widget }) {
     <WidgetShell widget={widget} scope="card" className="h-full">
       <article className="flex h-full flex-col gap-4 rounded-[1.5rem] p-5">
         {widget.props?.image ? (
-          <img src={widget.props.image} alt={widget.props?.title || ''} className="aspect-[4/5] w-full rounded-[1rem] object-cover" />
+          <img
+            src={widget.props.image}
+            alt={widget.props?.title || ''}
+            className="aspect-[4/5] w-full rounded-[1rem] object-cover"
+            style={{
+              aspectRatio: widget.props?.imageAspectRatio || undefined,
+              objectFit: widget.props?.imageFit || undefined,
+            }}
+          />
         ) : (
-          <div className="aspect-[4/5] rounded-[1rem] bg-stone-100" />
+          <div className="aspect-[4/5] rounded-[1rem] bg-stone-100" style={{ aspectRatio: widget.props?.imageAspectRatio || undefined }} />
         )}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-stone-900">{widget.props?.title}</h3>
-          <p className="text-sm text-stone-500">{widget.props?.price}</p>
+          <h3
+            className="text-lg font-semibold text-stone-900"
+            style={{
+              fontSize: widget.props?.titleSize || undefined,
+              color: widget.props?.titleColor || undefined,
+            }}
+          >
+            {widget.props?.title}
+          </h3>
+          <p
+            className="text-sm text-stone-500"
+            style={{
+              fontSize: widget.props?.priceSize || undefined,
+              color: widget.props?.priceColor || undefined,
+            }}
+          >
+            {widget.props?.price}
+          </p>
         </div>
       </article>
     </WidgetShell>
@@ -183,13 +247,37 @@ function CategoryCardWidgetRenderer({ widget }) {
     <WidgetShell widget={widget} scope="card" className="h-full">
       <article className="flex h-full flex-col gap-4 rounded-[1.5rem] p-5">
         {widget.props?.image ? (
-          <img src={widget.props.image} alt={widget.props?.title || ''} className="aspect-[16/10] w-full rounded-[1rem] object-cover" />
+          <img
+            src={widget.props.image}
+            alt={widget.props?.title || ''}
+            className="aspect-[16/10] w-full rounded-[1rem] object-cover"
+            style={{
+              aspectRatio: widget.props?.imageAspectRatio || undefined,
+              objectFit: widget.props?.imageFit || undefined,
+            }}
+          />
         ) : (
-          <div className="aspect-[16/10] rounded-[1rem] bg-stone-100" />
+          <div className="aspect-[16/10] rounded-[1rem] bg-stone-100" style={{ aspectRatio: widget.props?.imageAspectRatio || undefined }} />
         )}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-stone-900">{widget.props?.title}</h3>
-          <p className="text-sm text-stone-500">{widget.props?.description}</p>
+          <h3
+            className="text-lg font-semibold text-stone-900"
+            style={{
+              fontSize: widget.props?.titleSize || undefined,
+              color: widget.props?.titleColor || undefined,
+            }}
+          >
+            {widget.props?.title}
+          </h3>
+          <p
+            className="text-sm text-stone-500"
+            style={{
+              fontSize: widget.props?.descriptionSize || undefined,
+              color: widget.props?.descriptionColor || undefined,
+            }}
+          >
+            {widget.props?.description}
+          </p>
         </div>
       </article>
     </WidgetShell>
@@ -227,10 +315,34 @@ function TestimonialWidgetRenderer({ widget }) {
   return (
     <WidgetShell widget={widget} scope="card">
       <article className="flex h-full flex-col gap-4 rounded-[1.5rem] p-6">
-        <p className="text-lg leading-8 text-stone-700">"{widget.props?.quote}"</p>
+        <p
+          className="text-lg leading-8 text-stone-700"
+          style={{
+            fontSize: widget.props?.quoteSize || undefined,
+            color: widget.props?.quoteColor || undefined,
+          }}
+        >
+          "{widget.props?.quote}"
+        </p>
         <div className="mt-auto">
-          <p className="font-semibold text-stone-900">{widget.props?.author}</p>
-          <p className="text-sm text-stone-500">{widget.props?.role}</p>
+          <p
+            className="font-semibold text-stone-900"
+            style={{
+              fontSize: widget.props?.authorSize || undefined,
+              color: widget.props?.authorColor || undefined,
+            }}
+          >
+            {widget.props?.author}
+          </p>
+          <p
+            className="text-sm text-stone-500"
+            style={{
+              fontSize: widget.props?.roleSize || undefined,
+              color: widget.props?.roleColor || undefined,
+            }}
+          >
+            {widget.props?.role}
+          </p>
         </div>
       </article>
     </WidgetShell>

@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
+import { buildTypographyStyle } from './sectionStyleUtils';
 
 const logoDark = new URL('../public/asset/cropped-LOGO_SOMACAN_SHOP__1_-removebg-preview.webp', import.meta.url).href;
 const heroNavItems = [
@@ -56,29 +57,103 @@ const HERO_PRODUCTS = [
   }
 ];
 
-export default function WheelHero({ products: cmsProducts }) {
+export default function WheelHero({
+  products: cmsProducts,
+  autoplay = false,
+  autoplayDelay = 4500,
+  pauseOnHover = true,
+  showNavigation = true,
+  loop = true,
+  transitionDuration = 1500,
+  wheelDepth = 400,
+  imageWidth = '280px',
+  imageWidthMd = '450px',
+  imageWidthXl = '580px',
+  sectionMinHeight,
+  contentMaxWidth,
+  contentGap,
+  columnsTemplate,
+  alignItems,
+  justifyContent,
+  heroNameFontSize,
+  heroNameFontFamily,
+  heroNameFontWeight,
+  heroNameColor,
+  heroNameLineHeight,
+  heroNameLetterSpacing,
+  heroDescriptionFontSize,
+  heroDescriptionFontFamily,
+  heroDescriptionFontWeight,
+  heroDescriptionColor,
+  heroDescriptionLineHeight,
+  heroDescriptionLetterSpacing,
+}) {
   const currentProducts = cmsProducts && cmsProducts.length > 0 ? cmsProducts : HERO_PRODUCTS;
   const [index, setIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState(30);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const { addToCart, totalItems } = useCart();
   const { logout, user } = useAuth();
   const isAuthenticated = !!user;
   const containerRef = useRef(null);
   const wheelRef = useRef(null);
+  const nameStyle = buildTypographyStyle({
+    heroNameFontSize,
+    heroNameFontFamily,
+    heroNameFontWeight,
+    heroNameColor,
+    heroNameLineHeight,
+    heroNameLetterSpacing,
+  }, 'heroName');
+  const descriptionStyle = buildTypographyStyle({
+    heroDescriptionFontSize,
+    heroDescriptionFontFamily,
+    heroDescriptionFontWeight,
+    heroDescriptionColor,
+    heroDescriptionLineHeight,
+    heroDescriptionLetterSpacing,
+  }, 'heroDescription');
   
   const activeProduct = currentProducts[index];
 
   const handleNext = useCallback(() => {
-    setIndex((prev) => (prev + 1) % currentProducts.length);
+    setIndex((prev) => {
+      if (loop) return (prev + 1) % currentProducts.length;
+      return prev >= currentProducts.length - 1 ? prev : prev + 1;
+    });
     setQuantity(1);
-  }, [currentProducts.length]);
+  }, [currentProducts.length, loop]);
 
   const handlePrev = useCallback(() => {
-    setIndex((prev) => (prev - 1 + currentProducts.length) % currentProducts.length);
+    setIndex((prev) => {
+      if (loop) return (prev - 1 + currentProducts.length) % currentProducts.length;
+      return prev <= 0 ? prev : prev - 1;
+    });
     setQuantity(1);
-  }, [currentProducts.length]);
+  }, [currentProducts.length, loop]);
+
+  useEffect(() => {
+    setSelectedOption(activeProduct?.options?.[0] || 30);
+  }, [activeProduct]);
+
+  useEffect(() => {
+    if (!autoplay || currentProducts.length <= 1) {
+      return undefined;
+    }
+    if (pauseOnHover && isHovered) {
+      return undefined;
+    }
+
+    const delay = Number(autoplayDelay) > 0 ? Number(autoplayDelay) : 4500;
+    const interval = window.setInterval(() => {
+      setIndex((prev) => (prev + 1) % currentProducts.length);
+      setQuantity(1);
+    }, delay);
+
+    return () => window.clearInterval(interval);
+  }, [autoplay, autoplayDelay, currentProducts.length, isHovered, pauseOnHover]);
 
   // Animation for the wheel rotation
   useEffect(() => {
@@ -89,7 +164,7 @@ export default function WheelHero({ products: cmsProducts }) {
     
     gsap.to(wheelRef.current, {
       rotationY: -index * angleStep,
-      duration: 1.5,
+      duration: Math.max(Number(transitionDuration) || 1500, 100) / 1000,
       ease: "power4.inOut"
     });
 
@@ -109,8 +184,12 @@ export default function WheelHero({ products: cmsProducts }) {
     <section 
       ref={containerRef}
       className="relative h-screen w-full overflow-hidden transition-colors duration-1000"
-      style={{ background: activeProduct.bgGradient || activeProduct.accentColor || '#0d1f14' }}
-
+      style={{
+        background: activeProduct.bgGradient || activeProduct.accentColor || '#0d1f14',
+        minHeight: sectionMinHeight || undefined,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Abstract Background Shapes */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -261,7 +340,17 @@ export default function WheelHero({ products: cmsProducts }) {
         )}
 
         {/* ── Main Content Body ── */}
-        <div className="flex-1 relative grid grid-cols-12 items-center px-4 md:px-10 lg:px-24 pb-4 md:pb-12 overflow-hidden">
+        <div
+          className="flex-1 relative grid grid-cols-12 items-center px-4 md:px-10 lg:px-24 pb-4 md:pb-12 overflow-hidden"
+          style={{
+            maxWidth: contentMaxWidth || undefined,
+            marginInline: contentMaxWidth ? 'auto' : undefined,
+            gap: contentGap || undefined,
+            gridTemplateColumns: columnsTemplate || undefined,
+            alignItems: alignItems || undefined,
+            justifyContent: justifyContent || undefined,
+          }}
+        >
 
           {/* Left: Product Info */}
           <div className="col-span-12 lg:col-span-4 z-20 flex flex-col items-start order-2 lg:order-1 pt-3 md:pt-0">
@@ -280,7 +369,7 @@ export default function WheelHero({ products: cmsProducts }) {
                   <span className="text-[9px] font-bold uppercase tracking-[0.4em]">Collection Boutique</span>
                 </Link>
 
-                <h1 className="font-display text-white leading-[0.88] mb-4 md:mb-8" style={{ fontSize: 'clamp(2rem, 7vw, 5rem)' }}>
+                <h1 className="font-display text-white leading-[0.88] mb-4 md:mb-8" style={{ fontSize: 'clamp(2rem, 7vw, 5rem)', ...nameStyle }}>
                   {activeProduct.name.split(' ').map((word, i) => (
                     <span 
                       key={i} 
@@ -303,7 +392,7 @@ export default function WheelHero({ products: cmsProducts }) {
                   <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest italic hidden sm:block">Formule Botanique</span>
                 </div>
 
-                <p className="text-white/40 text-sm font-light leading-relaxed max-w-[340px] hidden md:block">
+                <p className="text-white/40 text-sm font-light leading-relaxed max-w-[340px] hidden md:block" style={descriptionStyle}>
                   {activeProduct.description}
                 </p>
               </motion.div>
@@ -324,15 +413,22 @@ export default function WheelHero({ products: cmsProducts }) {
                     key={prod.id || i}
                     className="absolute inset-0 flex items-center justify-center pointer-events-none"
                     style={{ 
-                      transform: `rotateY(${rotation}deg) translateZ(400px)`,
+                      transform: `rotateY(${rotation}deg) translateZ(${Number(wheelDepth) || 400}px)`,
                       backfaceVisibility: 'hidden'
                     }}
                   >
                     <img 
                       src={resolveCmsAssetUrl(prod.image)} 
                       alt={prod.name}
-                      className="w-[280px] md:w-[450px] xl:w-[580px] drop-shadow-[0_40px_100px_rgba(0,0,0,0.6)]"
+                      className="drop-shadow-[0_40px_100px_rgba(0,0,0,0.6)]"
                       style={{ 
+                        width: `clamp(${imageWidth || '280px'}, ${imageWidthMd || '450px'}, ${imageWidthXl || '580px'})`,
+                        maxWidth: '100%',
+                        objectFit: prod.imageFit || undefined,
+                        objectPosition: prod.imagePosition || undefined,
+                        aspectRatio: prod.imageAspectRatio || undefined,
+                        opacity: prod.imageOpacity || undefined,
+                        borderRadius: prod.imageRadius || undefined,
                         animation: i === index ? 'float 6s ease-in-out infinite' : 'none'
                       }}
                     />
@@ -342,6 +438,7 @@ export default function WheelHero({ products: cmsProducts }) {
             </div>
 
             {/* Slider Navigation Arrows */}
+            {showNavigation && (
             <div className="absolute bottom-4 flex items-center gap-10 z-50">
                <button 
                   onClick={handlePrev}
@@ -356,6 +453,7 @@ export default function WheelHero({ products: cmsProducts }) {
                   <ArrowRight size={18} strokeWidth={1} />
                </button>
             </div>
+            )}
           </div>
 
           {/* Right: Options & Info — hidden on mobile, visible on lg+ */}

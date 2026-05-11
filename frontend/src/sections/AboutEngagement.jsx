@@ -19,6 +19,25 @@ const defaultCommitments = [
   "Un univers calme, premium et marocain sans folklore excessif ni imitation des codes globaux les plus vus.",
 ];
 
+function toDisplayText(value, fallback = '') {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (value && typeof value === 'object') {
+    if (typeof value.text === 'string') return value.text;
+    if (Array.isArray(value)) {
+      return value.map((item) => toDisplayText(item, '')).filter(Boolean).join(' ');
+    }
+    const indexedValues = Object.keys(value)
+      .filter((key) => /^\d+$/.test(key))
+      .sort((a, b) => Number(a) - Number(b))
+      .map((key) => value[key]);
+    if (indexedValues.length > 0) {
+      return indexedValues.map((item) => toDisplayText(item, '')).filter(Boolean).join('');
+    }
+  }
+  return fallback;
+}
+
 export default function AboutEngagement({
   eyebrow = 'Engagement',
   title = 'Une marque qui prefere la coherence a la surenchere.',
@@ -29,6 +48,12 @@ export default function AboutEngagement({
   ctaSecondaryHref = '/blog',
   engagementImage = '',
 }) {
+  const safeEyebrow = toDisplayText(eyebrow, 'Engagement');
+  const safeTitle = toDisplayText(title, 'Une marque qui prefere la coherence a la surenchere.');
+  const safeCommitments = (Array.isArray(commitments) ? commitments : defaultCommitments)
+    .map((item) => toDisplayText(item, ''))
+    .filter(Boolean);
+
   return (
     <section className="section-padding pt-24 bg-[#fcfaf7]">
       <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -58,16 +83,16 @@ export default function AboutEngagement({
           transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
         >
           <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.38em] text-stone-400">
-            {eyebrow}
+            {safeEyebrow}
           </p>
           <h2 className="font-display text-3xl leading-tight text-somacan-brand md:text-5xl lg:text-6xl">
-            {title}
+            {safeTitle}
           </h2>
 
           <div className="mt-8 space-y-5">
-            {commitments.map((item, index) => (
+            {safeCommitments.map((item, index) => (
               <motion.div
-                key={item}
+                key={`${item}-${index}`}
                 initial={{ opacity: 0, x: 18 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
