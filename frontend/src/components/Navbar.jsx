@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Heart, LogIn, UserPlus, User2, LogOut, Menu, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -13,7 +14,7 @@ const NAV_ITEM_GAP = '40px';
 const NAV_FONT_SIZE = '11px';
 const NAV_LETTER_SPACING = '0.3em';
 const ICON_SIZE = '20px';
-const MOBILE_NAV_FONT_SIZE = '40px';
+const MOBILE_NAV_FONT_SIZE = '28px';
 const TOP_PADDING = '16px';
 const STICKY_TOP_PADDING = '12px';
 const LOGO_HEIGHT = '48px';
@@ -39,6 +40,11 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
   if (loading) return null;
 
@@ -70,7 +76,7 @@ export default function Navbar() {
           backdropFilter: `blur(${header.theme.backdropBlur})`,
           WebkitBackdropFilter: `blur(${header.theme.backdropBlur})`,
           boxShadow: navShadow,
-          paddingTop: navPadding,
+          paddingTop: `max(${navPadding}, env(safe-area-inset-top))`,
           paddingBottom: navPadding,
         }}
       >
@@ -87,8 +93,12 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center" style={{ gap: NAV_ITEM_GAP }}>
-          {header.navLinks.map((item) => (
-            item.isExternal ? (
+          {header.navLinks.map((item) => {
+            const isActive = item.href === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(item.href);
+
+            return item.isExternal ? (
               <a
                 key={item.label}
                 href={item.href}
@@ -98,7 +108,7 @@ export default function Navbar() {
                 style={{ color: navLinkColor, fontSize: NAV_FONT_SIZE, letterSpacing: NAV_LETTER_SPACING }}
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px transition-all duration-300 group-hover:w-full" style={{ backgroundColor: navLinkColor }} />
+                <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} style={{ backgroundColor: navLinkColor }} />
               </a>
             ) : (
               <Link
@@ -108,10 +118,10 @@ export default function Navbar() {
                 style={{ color: navLinkColor, fontSize: NAV_FONT_SIZE, letterSpacing: NAV_LETTER_SPACING }}
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px transition-all duration-300 group-hover:w-full" style={{ backgroundColor: navLinkColor }} />
+                <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} style={{ backgroundColor: navLinkColor }} />
               </Link>
-            )
-          ))}
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
@@ -173,82 +183,163 @@ export default function Navbar() {
       </div>
       </div>
 
-      {mobileOpen && (
-        <div className="md:hidden absolute top-0 left-0 right-0 h-screen z-[60] flex flex-col" style={{ backgroundColor: header.theme.mobileBackgroundColor || '#ffffff' }}>
-          <div className="section-padding py-8 flex justify-between items-center border-b border-stone-50">
-            <img
-              src={activeLogo}
-              alt={header.logo.alt || 'Somacan'}
-              className="w-auto"
-              style={{ height: MOBILE_LOGO_HEIGHT }}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              key="mobile-backdrop"
+              className="fixed inset-0 z-[59] bg-stone-900/40 backdrop-blur-sm md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => setMobileOpen(false)}
+              aria-hidden="true"
             />
-            <button onClick={() => setMobileOpen(false)} className="p-2">
-              <X className="w-6 h-6" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
-            </button>
-          </div>
-          <div className="section-padding py-12 flex flex-col gap-8">
-            {header.navLinks.map((item) => (
-              item.isExternal ? (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+
+            {/* Menu panel — side drawer from right */}
+            <motion.div
+              key="mobile-panel"
+              className="md:hidden fixed right-0 top-0 h-[100dvh] z-[60] w-full sm:w-[380px] flex flex-col overflow-hidden"
+              style={{ backgroundColor: header.theme.mobileBackgroundColor || '#ffffff' }}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            >
+              {/* Top bar */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-stone-100 shrink-0">
+                <img
+                  src={activeLogo}
+                  alt={header.logo.alt || 'Somacan'}
+                  className="w-auto"
+                  style={{ height: MOBILE_LOGO_HEIGHT }}
+                />
+                <button
                   onClick={() => setMobileOpen(false)}
-                  className="font-display border-b border-stone-50 pb-4"
-                  style={{ color: header.theme.stickyTextColor || header.theme.textColor, fontSize: MOBILE_NAV_FONT_SIZE }}
+                  className="rounded-full bg-stone-100 p-2.5"
+                  aria-label="Fermer le menu"
                 >
-                  {item.label}
-                </a>
-              ) : (
-                <Link
-                  key={item.label}
-                  to={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="font-display border-b border-stone-50 pb-4"
-                  style={{ color: header.theme.stickyTextColor || header.theme.textColor, fontSize: MOBILE_NAV_FONT_SIZE }}
-                >
-                  {item.label}
-                </Link>
-              )
-            ))}
-            <div className="flex items-center gap-4 pt-4">
-              {isAuthenticated ? (
-                <>
-                  <Link to="/account" onClick={() => setMobileOpen(false)} className="rounded-full border border-stone-200 p-3">
-                    <User2 className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      logout();
-                      setMobileOpen(false);
-                    }}
-                    className="rounded-full border border-stone-200 p-3"
+                  <X className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                </button>
+              </div>
+
+              {/* Nav links */}
+              <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-1">
+                {header.navLinks.map((item, index) => {
+                  const isActive = item.href === '/'
+                    ? location.pathname === '/'
+                    : location.pathname.startsWith(item.href);
+
+                  const linkClass = `block py-4 px-3 rounded-2xl font-display transition-colors hover:bg-stone-50 ${isActive ? 'bg-stone-50 font-bold' : ''}`;
+                  const linkStyle = {
+                    color: isActive ? header.theme.activeColor : (header.theme.stickyTextColor || header.theme.textColor),
+                    fontSize: '26px',
+                  };
+
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: 24 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.35, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      {item.isExternal ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setMobileOpen(false)}
+                          className={linkClass}
+                          style={linkStyle}
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={linkClass}
+                          style={linkStyle}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Bottom actions */}
+              <motion.div
+                className="shrink-0 px-6 py-6 border-t border-stone-100"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
+                <div className="flex items-center gap-3 flex-wrap">
+                  {isAuthenticated ? (
+                    <>
+                      <Link
+                        to="/account"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center rounded-full border border-stone-200 w-12 h-12"
+                        aria-label="Mon compte"
+                      >
+                        <User2 className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => { logout(); setMobileOpen(false); }}
+                        className="flex items-center justify-center rounded-full border border-stone-200 w-12 h-12"
+                        aria-label="Deconnexion"
+                      >
+                        <LogOut className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center rounded-full border border-stone-200 w-12 h-12"
+                        aria-label="Connexion"
+                      >
+                        <LogIn className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center rounded-full border border-stone-200 w-12 h-12"
+                        aria-label="Inscription"
+                      >
+                        <UserPlus className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                      </Link>
+                    </>
+                  )}
+                  <Link
+                    to="/wishlist"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center rounded-full border border-stone-200 w-12 h-12"
+                    aria-label="Wishlist"
                   >
-                    <LogOut className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-full border border-stone-200 p-3">
-                    <LogIn className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                    <Heart className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
                   </Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)} className="rounded-full border border-stone-200 p-3">
-                    <UserPlus className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
+                  <Link
+                    to="/cart"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center rounded-full border border-stone-200 w-12 h-12"
+                    aria-label="Panier"
+                  >
+                    <ShoppingBag className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
                   </Link>
-                </>
-              )}
-              <Link to="/wishlist" onClick={() => setMobileOpen(false)} className="rounded-full border border-stone-200 p-3">
-                <Heart className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
-              </Link>
-              <Link to="/cart" onClick={() => setMobileOpen(false)} className="rounded-full border border-stone-200 p-3">
-                <ShoppingBag className="w-5 h-5" style={{ color: header.theme.stickyIconColor || header.theme.iconColor }} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+                </div>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

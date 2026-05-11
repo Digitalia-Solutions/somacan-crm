@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getHeaderSettings } from '../lib/api';
+import { getHeaderSettings, getMenu } from '../lib/api';
 
 const logoDark = new URL('../public/asset/cropped-LOGO_SOMACAN_SHOP__1_-removebg-preview.webp', import.meta.url).href;
 
@@ -33,23 +33,41 @@ export const HEADER_DEFAULTS = {
   },
 };
 
+function menuItemsToNavLinks(items = []) {
+  return items.map(item => ({
+    label: item.label,
+    href: item.url,
+    isExternal: item.type === 'external',
+    target: item.target || '_self',
+    ...(item.children?.length > 0 && { children: menuItemsToNavLinks(item.children) }),
+  }));
+}
+
 export default function useHeaderSettings() {
   const [header, setHeader] = useState(HEADER_DEFAULTS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getHeaderSettings()
-      .then(data => {
-        setHeader({
-          logo: { ...HEADER_DEFAULTS.logo, ...(data.logo || {}) },
-          navLinks: (data.navLinks && data.navLinks.length > 0) ? data.navLinks : HEADER_DEFAULTS.navLinks,
-          ctaButton: { ...HEADER_DEFAULTS.ctaButton, ...(data.ctaButton || {}) },
-          settings: { ...HEADER_DEFAULTS.settings, ...(data.settings || {}) },
-          theme: { ...HEADER_DEFAULTS.theme, ...(data.theme || {}) },
-        });
-      })
-      .catch(() => {}) // keep defaults on error
-      .finally(() => setLoading(false));
+    Promise.all([
+      getHeaderSettings().catch(() => null),
+      getMenu('main').catch(() => null),
+    ]).then(([headerData, menuData]) => {
+      const base = headerData || {};
+      // Build navLinks: prefer CMS menu, fallback to header navLinks, fallback to defaults
+      let navLinks = HEADER_DEFAULTS.navLinks;
+      if (menuData?.items?.length > 0) {
+        navLinks = menuItemsToNavLinks(menuData.items);
+      } else if (base.navLinks?.length > 0) {
+        navLinks = base.navLinks;
+      }
+      setHeader({
+        logo: { ...HEADER_DEFAULTS.logo, ...(base.logo || {}) },
+        navLinks,
+        ctaButton: { ...HEADER_DEFAULTS.ctaButton, ...(base.ctaButton || {}) },
+        settings: { ...HEADER_DEFAULTS.settings, ...(base.settings || {}) },
+        theme: { ...HEADER_DEFAULTS.theme, ...(base.theme || {}) },
+      });
+    }).finally(() => setLoading(false));
   }, []);
 
   return { header, loading };

@@ -2,12 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import axios from 'axios';
-import { API_BASE_URL } from '../lib/api';
+import { API_BASE_URL, getPageBySlug } from '../lib/api';
+import PageRenderer from '../cms/v2/PageRenderer';
 
 export default function BlogArticle() {
   const { slug } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cmsPage, setCmsPage] = useState(null);
+
+  useEffect(() => {
+    getPageBySlug('article-detail')
+      .then(data => setCmsPage(data))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -79,7 +87,7 @@ export default function BlogArticle() {
             </div>
 
             <div className="overflow-hidden rounded-[2.5rem] shadow-[0_24px_80px_rgba(28,25,23,0.10)]">
-              <img src={article.coverImage || article.image} alt={article.title} className="h-[28rem] w-full object-cover" />
+              <img src={article.coverImage || article.image} alt={article.title} crossOrigin="anonymous" className="h-[28rem] w-full object-cover" />
             </div>
           </div>
         </section>
@@ -117,6 +125,12 @@ export default function BlogArticle() {
           </div>
         </section>
       </article>
+
+      {cmsPage && (
+        <div className="mt-20">
+          <PageRenderer page={cmsPage} />
+        </div>
+      )}
     </main>
   );
 }

@@ -12,6 +12,22 @@ import OfferSection from '../../sections/OfferSection';
 import TestimonialsSection from '../../sections/TestimonialsSection';
 import BlogPreview from '../../sections/BlogPreview';
 import FaqSection from '../../sections/FaqSection';
+import ContactHero from '../../sections/ContactHero';
+import ContactForm from '../../sections/ContactForm';
+import ContactMap from '../../sections/ContactMap';
+import ContactFAQ from '../../sections/ContactFAQ';
+import ShopHero from '../../sections/ShopHero';
+import ShopGrid from '../../sections/ShopGrid';
+import AboutHero from '../../sections/AboutHero';
+import AboutPrinciples from '../../sections/AboutPrinciples';
+import AboutManifeste from '../../sections/AboutManifeste';
+import AboutMethod from '../../sections/AboutMethod';
+import AboutTimeline from '../../sections/AboutTimeline';
+import AboutEngagement from '../../sections/AboutEngagement';
+import BlogHero from '../../sections/BlogHero';
+import BlogGrid from '../../sections/BlogGrid';
+import ArticleEditorialNote from '../../sections/ArticleEditorialNote';
+import ProductRelated from '../../sections/ProductRelated';
 import NewsletterSection from '../../sections/NewsletterSection';
 import FeaturesBar from '../../sections/FeaturesBar';
 import StorySection from '../../sections/StorySection';
@@ -22,6 +38,22 @@ import { getVisibilityClasses, getResponsiveInlineStyle, normalizeResponsiveConf
 const SECTION_COMPONENTS = {
   Hero,
   WheelHero,
+  ContactHero,
+  ContactForm,
+  ContactMap,
+  ContactFAQ,
+  ShopHero,
+  ShopGrid,
+  AboutHero,
+  AboutPrinciples,
+  AboutManifeste,
+  AboutMethod,
+  AboutTimeline,
+  AboutEngagement,
+  BlogHero,
+  BlogGrid,
+  ArticleEditorialNote,
+  ProductRelated,
   BrandMarquee,
   CategorySection,
   ProductsShowcase,

@@ -274,7 +274,7 @@ export default function Checkout() {
             Référence #{order.id}. Le calcul de la livraison et des remises a été validé côté serveur.
           </p>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
             <SuccessStat label="Statut" value="En attente" />
             <SuccessStat
               label="Paiement"
@@ -328,22 +328,22 @@ export default function Checkout() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fcfaf7] pb-20 pt-32">
+    <main className="min-h-screen bg-[#fcfaf7] pb-20 pt-28 md:pt-32">
       <div className="section-padding mx-auto max-w-7xl">
-        <div className="mb-10">
+        <div className="mb-7 md:mb-10">
           <Link
             to="/cart"
-            className="inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-500 hover:text-stone-900"
+            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-500 hover:text-stone-900"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={13} />
             Retour au panier
           </Link>
 
-          <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400">
+          <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400">
             Checkout
           </p>
 
-          <h1 className="mt-3 font-display text-5xl leading-[0.95] text-somacan-brand md:text-7xl">
+          <h1 className="mt-2 font-display leading-[0.95] text-somacan-brand" style={{ fontSize: 'clamp(2rem, 7vw, 5rem)' }}>
             Finaliser
             <br />
             <span className="font-light italic text-stone-400">
@@ -352,8 +352,8 @@ export default function Checkout() {
           </h1>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
-          <form id="checkout-form" onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid gap-5 md:gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
+          <form id="checkout-form" onSubmit={handleSubmit} className="order-2 space-y-6 lg:order-1">
             {!user && (
               <CheckoutCard title="Mode de commande">
                 <div className="grid gap-4">
@@ -450,7 +450,7 @@ export default function Checkout() {
                 </span>
               }
             >
-              <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+              <div className="grid grid-cols-[1fr_auto] gap-3">
                 <input
                   value={couponInput}
                   onChange={(event) => setCouponInput(event.target.value)}
@@ -504,16 +504,16 @@ export default function Checkout() {
             )}
           </form>
 
-          <aside className="h-fit rounded-[2rem] bg-stone-900 p-6 text-stone-100 shadow-[0_24px_80px_rgba(28,25,23,0.15)] lg:sticky lg:top-28">
+          <aside className="order-1 h-fit rounded-[1.5rem] md:rounded-[2rem] bg-stone-900 p-4 md:p-6 text-stone-100 shadow-[0_24px_80px_rgba(28,25,23,0.15)] lg:order-2 lg:sticky lg:top-28">
             <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-stone-500">
               Récapitulatif
             </p>
 
-            <h2 className="mt-3 font-display text-4xl text-white">
+            <h2 className="mt-2 font-display text-2xl md:text-4xl text-white">
               Votre commande
             </h2>
 
-            <div className="mt-7 max-h-[330px] space-y-3 overflow-y-auto pr-1">
+            <div className="mt-5 max-h-[220px] md:max-h-[330px] space-y-2 md:space-y-3 overflow-y-auto pr-1">
               {items.map((item) => (
                 <div
                   key={item._id}
@@ -602,9 +602,9 @@ export default function Checkout() {
 
 function CheckoutCard({ title, children }) {
   return (
-    <section className="rounded-[2rem] bg-white p-6 shadow-[0_18px_60px_rgba(28,25,23,0.05)] md:p-8">
-      <h2 className="font-display text-3xl text-somacan-brand">{title}</h2>
-      <div className="mt-7">{children}</div>
+    <section className="rounded-[1.5rem] md:rounded-[2rem] bg-white p-5 shadow-[0_12px_40px_rgba(28,25,23,0.05)] md:p-8">
+      <h2 className="font-display text-2xl md:text-3xl text-somacan-brand">{title}</h2>
+      <div className="mt-5 md:mt-7">{children}</div>
     </section>
   );
 }

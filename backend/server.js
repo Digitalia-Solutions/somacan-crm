@@ -65,6 +65,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/pages', pageRoutes);
+app.use('/api/admin/pages', pageRoutes);
 app.use('/api/admin/page-sections', pageSectionRoutes);
 app.use('/api', pageSectionRoutes);
 app.use('/api/menus', menuRoutes);
@@ -118,7 +119,7 @@ async function startServer() {
     console.log('Database synced');
 
     // Sync Page (SEO columns), PageSection (new table) with alter
-    const { Page, PageSection, GlobalStylePreset } = await import('./models/index.js');
+    const { Page, PageSection, GlobalStylePreset, PageRevision } = await import('./models/index.js');
     const { default: ThemeSettings } = await import('./models/ThemeSettings.js');
     const { default: HeaderSettings } = await import('./models/HeaderSettings.js');
     const { default: FooterSettings } = await import('./models/FooterSettings.js');
@@ -126,13 +127,14 @@ async function startServer() {
     const { default: MenuItem } = await import('./models/MenuItem.js');
     await Page.sync({ alter: true });
     await PageSection.sync({ alter: true });
-    await ThemeSettings.sync({ alter: true });
-    await HeaderSettings.sync({ alter: true });
-    await FooterSettings.sync({ alter: true });
-    await Media.sync({ alter: true });
-    await MenuItem.sync({ alter: true });
-    await GlobalStylePreset.sync({ alter: true });
-    console.log('Page + PageSection + ThemeSettings + HeaderSettings + FooterSettings + Media + MenuItem + GlobalStylePreset tables synced');
+    await PageRevision.sync({ alter: true });
+    await ThemeSettings.sync({ alter: false });
+    await HeaderSettings.sync({ alter: false });
+    await FooterSettings.sync({ alter: false });
+    await Media.sync({ alter: false });
+    await MenuItem.sync({ alter: false });
+    await GlobalStylePreset.sync({ alter: false });
+    console.log('Page + PageSection + PageRevision + ThemeSettings + HeaderSettings + FooterSettings + Media + MenuItem + GlobalStylePreset tables synced');
 
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (err) {

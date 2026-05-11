@@ -87,7 +87,7 @@ export default function AdminBlogEditor() {
   if (loading) return <div className="p-8 text-stone-400">Chargement...</div>;
 
   return (
-    <div className="p-8 pb-24">
+    <div className="w-full pb-12">
       <header className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-4">
           <Link to="/admin/blogs" className="p-2 rounded-full hover:bg-stone-100 text-stone-400">

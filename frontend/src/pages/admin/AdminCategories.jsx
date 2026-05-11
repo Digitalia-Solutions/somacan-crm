@@ -200,8 +200,8 @@ export default function AdminCategories() {
       {/* Editor Sidebar/Drawer */}
       {editorOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-end bg-stone-900/40 backdrop-blur-sm">
-          <div className="h-full w-full max-w-lg bg-white shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
-            <div className="flex items-center justify-between border-b border-stone-100 px-8 py-6">
+          <div className="h-screen w-full max-w-lg bg-white shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
+            <div className="shrink-0 flex items-center justify-between border-b border-stone-100 px-8 py-6">
               <h2 className="font-display text-3xl text-somacan-brand">
                 {editingCategory.id ? 'Modifier' : 'Nouvelle catégorie'}
               </h2>
@@ -210,7 +210,7 @@ export default function AdminCategories() {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-8 space-y-6">
+            <form onSubmit={handleSave} className="flex-1 min-h-0 overflow-y-auto p-8 space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Nom</label>
                 <input
@@ -288,7 +288,7 @@ export default function AdminCategories() {
               </label>
             </form>
 
-            <div className="border-t border-stone-100 px-8 py-6 bg-white">
+            <div className="shrink-0 border-t border-stone-100 px-8 py-6 bg-white">
               <button
                 onClick={handleSave}
                 disabled={saving}

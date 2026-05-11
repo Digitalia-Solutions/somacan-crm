@@ -15,7 +15,6 @@ const Page = sequelize.define('Page', {
   slug: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     validate: {
       notEmpty: true,
     },
@@ -49,6 +48,11 @@ const Page = sequelize.define('Page', {
   canonicalUrl: {
     type: DataTypes.STRING,
     allowNull: true,
+  },
+  noIndex: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
   templateConfig: { type: DataTypes.JSON, allowNull: false, defaultValue: {} },
 }, {

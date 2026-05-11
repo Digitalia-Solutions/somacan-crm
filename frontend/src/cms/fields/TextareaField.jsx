@@ -1,17 +1,16 @@
-export default function TextareaField({ label, value, onChange, placeholder, rows = 4, hint }) {
+import React from 'react';
+import { FieldWrapper } from '../FieldRenderer';
+
+export default function TextareaField({ label, value, onChange, placeholder, rows = 4, hint, required, error }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      {label && (
-        <label className="text-sm font-medium text-stone-700">{label}</label>
-      )}
+    <FieldWrapper label={label} hint={hint} required={required} error={error}>
       <textarea
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="border border-stone-200 rounded-xl bg-stone-50 px-3 py-2 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#033a22]/30 focus:border-[#033a22] transition resize-y"
+        className="w-full border border-stone-200 rounded-2xl bg-stone-50 p-4 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900 transition-all resize-y shadow-sm"
       />
-      {hint && <p className="text-xs text-stone-400">{hint}</p>}
-    </div>
+    </FieldWrapper>
   );
 }

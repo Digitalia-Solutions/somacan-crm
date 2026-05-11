@@ -294,15 +294,7 @@ export function updateAdminContent(id, payload) {
 }
 
 export function uploadAdminImage(file) {
-  const formData = new FormData();
-  formData.append('image', file);
-  
-  return adminRequest('/upload', {
-    method: 'POST',
-    body: formData,
-    // Note: Fetch handles multipart boundary when body is FormData
-    // so we need to ensure adminRequest doesn't force JSON
-  });
+  return uploadMedia(file, { title: file.name });
 }
 
 export function getAdminContactSubmissions() {

@@ -212,6 +212,10 @@ export const GSAP_PRESETS = {
     defaults: { pin: true, scrub: true, snap: false },
     label: 'Horizontal Pin Scroll',
   },
+  'magnetic-hover-gsap': {
+    label: 'Magnetic Hover (GSAP)',
+    requiresInteractive: true,
+  },
 };
 
 export const ANIMATION_TYPES = Object.keys(FM_VARIANTS).concat(Object.keys(GSAP_PRESETS));

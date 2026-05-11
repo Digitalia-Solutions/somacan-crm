@@ -47,7 +47,7 @@ export default function AdminBlogs() {
   );
 
   return (
-    <div className="p-8">
+    <div className="w-full pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
         <div>
           <h1 className="font-display text-3xl text-somacan-brand">Journal / Blog</h1>
@@ -73,8 +73,8 @@ export default function AdminBlogs() {
         />
       </div>
 
-      <div className="bg-white rounded-[2rem] border border-stone-200 overflow-hidden shadow-sm">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-white rounded-[2rem] border border-stone-200 overflow-x-auto shadow-sm">
+        <table className="w-full min-w-[700px] text-left border-collapse">
           <thead>
             <tr className="bg-stone-50/50 border-b border-stone-100">
               <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-wider text-stone-400">Article</th>

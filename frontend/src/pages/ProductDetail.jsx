@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Minus, Plus, ShoppingBag, Star, Truck, Shield, RotateCcw, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import ScrollReveal from '../components/ScrollReveal';
 import { useProduct } from '../hooks/useProducts';
+import { getPageBySlug } from '../lib/api';
+import PageRenderer from '../cms/v2/PageRenderer';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -11,6 +13,26 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState(0);
   const { addToCart } = useCart();
   const { product, loading, error } = useProduct(slug);
+  const [cmsPage, setCmsPage] = useState(null);
+
+  useEffect(() => {
+    getPageBySlug('product-detail')
+      .then(data => setCmsPage(data))
+      .catch(() => {}); // Optional CMS content
+  }, []);
+
+  // Inject currentSlug into ProductRelated section content so it filters the current product
+  const cmsPageWithSlug = useMemo(() => {
+    if (!cmsPage || !slug) return cmsPage;
+    return {
+      ...cmsPage,
+      sections: (cmsPage.sections || []).map(s =>
+        s.type === 'ProductRelated'
+          ? { ...s, content: { ...s.content, currentSlug: slug } }
+          : s
+      ),
+    };
+  }, [cmsPage, slug]);
 
   if (loading) {
     return (
@@ -56,9 +78,9 @@ export default function ProductDetail() {
   const gallery = product.images?.length ? product.images : [product.mainImage];
 
   return (
-    <main className="pt-32 pb-20 bg-stone-50 min-h-screen">
+    <main className="pt-28 pb-20 bg-stone-50 min-h-screen md:pt-32">
       <div className="section-padding">
-        <div className="flex items-center gap-2 text-sm text-stone-500 mb-12">
+        <div className="flex items-center gap-2 text-sm text-stone-500 mb-6 md:mb-12 overflow-x-auto whitespace-nowrap scrollbar-hide">
           <Link to="/" className="hover:text-somacan-700">Accueil</Link>
           <ChevronRight className="w-4 h-4" />
           <Link to="/shop" className="hover:text-somacan-700">Boutique</Link>
@@ -66,7 +88,7 @@ export default function ProductDetail() {
           <span className="text-somacan-900">{product.name}</span>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
           <ScrollReveal direction="left" className="relative">
             <div className="space-y-4">
               <div className="aspect-square rounded-3xl overflow-hidden bg-white">
@@ -106,10 +128,10 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              <h1 className="font-serif text-3xl md:text-5xl text-somacan-900 mb-6">{product.name}</h1>
+              <h1 className="font-serif text-2xl md:text-5xl text-somacan-900 mb-4 md:mb-6">{product.name}</h1>
 
-              <div className="flex items-baseline gap-4 mb-8">
-                <span className="text-3xl font-semibold text-somacan-800">{product.price} MAD</span>
+              <div className="flex items-baseline gap-4 mb-6 md:mb-8">
+                <span className="text-2xl md:text-3xl font-semibold text-somacan-800">{product.price} MAD</span>
                 {product.originalPrice && (
                   <span className="text-xl text-stone-400 line-through">{product.originalPrice} MAD</span>
                 )}
@@ -117,28 +139,28 @@ export default function ProductDetail() {
 
               <p className="text-stone-600 leading-relaxed mb-8">{product.description}</p>
 
-              <div className="flex items-center gap-6 mb-10">
-                <div className="flex items-center border border-stone-200 rounded-full">
-                  <button 
+              <div className="flex items-center gap-3 mb-8 md:gap-6 md:mb-10">
+                <div className="flex items-center border border-stone-200 rounded-full shrink-0">
+                  <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-4 hover:bg-stone-100 rounded-l-full transition-colors"
+                    className="p-3 md:p-4 hover:bg-stone-100 rounded-l-full transition-colors"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
-                  <button 
+                  <span className="w-10 text-center font-medium">{quantity}</span>
+                  <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-4 hover:bg-stone-100 rounded-r-full transition-colors"
+                    className="p-3 md:p-4 hover:bg-stone-100 rounded-r-full transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
 
-                <button 
+                <button
                   onClick={() => addToCart({ ...product, quantity })}
-                  className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-somacan-800 text-white rounded-full font-medium hover:bg-somacan-900 transition-all hover:shadow-xl"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-4 md:px-8 bg-somacan-800 text-white rounded-full font-medium hover:bg-somacan-900 transition-all hover:shadow-xl text-sm md:text-base"
                 >
-                  <ShoppingBag className="w-5 h-5" />
+                  <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
                   Ajouter au panier
                 </button>
               </div>
@@ -195,6 +217,12 @@ export default function ProductDetail() {
           </ScrollReveal>
         </div>
       </div>
+
+      {cmsPageWithSlug && (
+        <div className="mt-20">
+          <PageRenderer page={cmsPageWithSlug} />
+        </div>
+      )}
     </main>
   );
 }

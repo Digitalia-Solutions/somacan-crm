@@ -13,6 +13,7 @@
 @layer base {
   html {
     scroll-behavior: auto;
+    overflow-x: hidden;
   }
 
   body {
@@ -66,6 +67,34 @@
 
   .letter-spacing-widest {
     letter-spacing: 0.5em;
+  }
+
+  /* Fluid typography scale — use instead of fixed text-5xl+ on mobile */
+  .text-fluid-hero {
+    font-size: clamp(2.25rem, 9vw, 6rem);
+    line-height: 0.92;
+  }
+
+  .text-fluid-section {
+    font-size: clamp(1.875rem, 6vw, 4rem);
+    line-height: 1.05;
+  }
+
+  .text-fluid-title {
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    line-height: 1.1;
+  }
+}
+
+/* Mobile touch comfort */
+@media (max-width: 767px) {
+  /* Ensure nav/action buttons meet 44px touch target minimum */
+  .nav-icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

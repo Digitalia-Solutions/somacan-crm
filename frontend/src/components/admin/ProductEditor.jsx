@@ -68,9 +68,9 @@ export default function ProductEditor({ product, categories, isOpen, onClose, on
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-end bg-stone-900/40 backdrop-blur-sm">
-      <div className="h-full w-full max-w-4xl bg-white shadow-2xl animate-in slide-in-from-right duration-300 overflow-hidden flex flex-col">
+      <div className="h-screen w-full max-w-4xl bg-white shadow-2xl animate-in slide-in-from-right duration-300 overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-stone-100 px-8 py-6">
+        <div className="shrink-0 flex items-center justify-between border-b border-stone-100 px-8 py-6">
           <div>
             <h2 className="font-display text-3xl text-somacan-brand">
               {product.id ? 'Modifier le produit' : 'Nouveau produit'}
@@ -83,7 +83,7 @@ export default function ProductEditor({ product, categories, isOpen, onClose, on
         </div>
 
         {/* Tabs */}
-        <div className="flex px-8 border-b border-stone-100">
+        <div className="shrink-0 flex px-8 border-b border-stone-100">
           {[
             { id: 'general', label: 'Général', icon: List },
             { id: 'inventory', label: 'Inventaire', icon: Box },
@@ -104,7 +104,7 @@ export default function ProductEditor({ product, categories, isOpen, onClose, on
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 bg-stone-50/50">
+        <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-stone-50/50">
           {activeTab === 'general' && (
             <div className="grid gap-6">
               <div className="grid gap-6 md:grid-cols-2">
@@ -365,7 +365,7 @@ export default function ProductEditor({ product, categories, isOpen, onClose, on
         </div>
 
         {/* Footer */}
-        <div className="border-t border-stone-100 px-8 py-6 bg-white flex justify-end gap-4">
+        <div className="shrink-0 border-t border-stone-100 px-8 py-6 bg-white flex justify-end gap-4">
           <button
             onClick={onClose}
             className="px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:bg-stone-50 transition-colors"

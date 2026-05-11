@@ -61,6 +61,7 @@ export default function Blog() {
                         <img
                           src={article.coverImage || article.image}
                           alt={article.title}
+                          crossOrigin="anonymous"
                           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute left-6 top-6">

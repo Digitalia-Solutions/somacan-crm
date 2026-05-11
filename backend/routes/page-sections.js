@@ -1,6 +1,7 @@
 import express from 'express';
 import Page from '../models/Page.js';
 import PageSection from '../models/PageSection.js';
+import PageRevision from '../models/PageRevision.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { getSectionDefinition, isWidgetSectionType } from '../../shared/cms/sections.js';
 import { createResponsiveValue } from '../../shared/cms/responsive.js';
@@ -146,6 +147,22 @@ router.put('/:id', requireAdmin, async (req, res) => {
     await validateSectionAgainstTemplate(req.body.pageSlug || section.pageSlug, req.body.type || section.type, page);
 
     const normalizedPayload = normalizeSectionPayload(req.body, section);
+
+    // Snapshot before update (fire-and-forget, don't block save)
+    PageRevision.create({
+      pageId: section.pageId,
+      pageSlug: section.pageSlug,
+      sectionId: section.id,
+      snapshot: {
+        sectionType: section.type,
+        sectionName: section.name,
+        content: section.content,
+        settings: section.settings,
+        animation: section.animation,
+        responsive: section.responsive,
+        widgetTree: section.widgetTree,
+      },
+    }).catch(() => {});
 
     await section.update(normalizedPayload);
     return res.json(normalizeSectionPayload(section.toJSON(), section));

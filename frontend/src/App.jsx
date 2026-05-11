@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import Noise from './components/Noise';
 import DynamicPage from './pages/DynamicPage';
 import AdminPageEditor from './pages/admin/AdminPageEditor';
+import Home from './pages/Home';
 import Shop from './pages/Shop';
 import About from './pages/About';
 import Blog from './pages/Blog';
@@ -53,6 +54,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
 import { PageChromeProvider, usePageChrome } from './context/PageChromeContext';
+import { ToastProvider } from './context/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import NewsletterPopup from './components/NewsletterPopup';
 import AdminAccessRoute from './components/AdminAccessRoute';
@@ -63,8 +65,15 @@ function AppInner() {
   const location = useLocation();
   const { hideNavbar } = usePageChrome();
   useTheme();
+  const isPreview = location.search.includes('preview=true');
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const hideChrome = isPreview || isAdminRoute;
 
   useEffect(() => {
+    if (hideChrome) {
+      return undefined;
+    }
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -86,7 +95,7 @@ function AppInner() {
     return () => {
       lenis.destroy();
     };
-  }, []);
+  }, [hideChrome]);
 
   useEffect(() => {
     if (!location.hash) {
@@ -102,9 +111,6 @@ function AppInner() {
     });
   }, [location.hash, location.pathname]);
 
-  const isPreview = location.search.includes('preview=true');
-  const isAdminRoute = location.pathname.startsWith('/admin');
-  const hideChrome = isPreview || isAdminRoute;
   // WheelHero and similar self-contained heroes embed their own navbar
   const showNavbar = !hideChrome && !hideNavbar;
   const showFooter = !hideChrome;
@@ -118,15 +124,15 @@ function AppInner() {
             {showNavbar && <Navbar />}
             {showNavbar && <NewsletterPopup />}
             <Routes>
-              <Route path="/" element={<DynamicPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/blog" element={<Blog />} />
+              <Route path="/" element={<DynamicPage slug="home" Fallback={Home} />} />
+              <Route path="/about" element={<DynamicPage slug="about" Fallback={About} />} />
+              <Route path="/shop" element={<DynamicPage slug="shop" Fallback={Shop} />} />
+              <Route path="/blog" element={<DynamicPage slug="blog" Fallback={Blog} />} />
+              <Route path="/contact" element={<DynamicPage slug="contact" Fallback={Contact} />} />
               <Route path="/blog/:slug" element={<BlogArticle />} />
               <Route path="/shop/:slug" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
-              <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/wishlist" element={<Wishlist />} />
@@ -181,9 +187,11 @@ function AppInner() {
 
 function App() {
   return (
-    <PageChromeProvider>
-      <AppInner />
-    </PageChromeProvider>
+    <ToastProvider>
+      <PageChromeProvider>
+        <AppInner />
+      </PageChromeProvider>
+    </ToastProvider>
   );
 }
 

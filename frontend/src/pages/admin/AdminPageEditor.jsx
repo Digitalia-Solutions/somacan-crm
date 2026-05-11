@@ -72,7 +72,7 @@ export default function AdminPageEditor() {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-stone-50 overflow-hidden">
+    <div className="flex flex-col bg-stone-50 -m-10 h-[calc(100vh-80px)] overflow-hidden">
       {/* Top Header */}
       <header className="flex h-16 items-center justify-between border-b border-stone-200 bg-white px-6 shadow-sm z-30">
         <div className="flex items-center gap-4">

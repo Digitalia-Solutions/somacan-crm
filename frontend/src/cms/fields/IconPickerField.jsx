@@ -12,29 +12,27 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
+import { FieldWrapper } from '../FieldRenderer';
 
 const ICONS = [
-  { key: 'leaf', label: 'Leaf', Icon: Leaf },
-  { key: 'flask', label: 'Flask', Icon: FlaskConical },
-  { key: 'sparkles', label: 'Sparkles', Icon: Sparkles },
-  { key: 'shield', label: 'Shield', Icon: ShieldCheck },
-  { key: 'star', label: 'Star', Icon: Star },
-  { key: 'heart', label: 'Heart', Icon: Heart },
-  { key: 'check', label: 'Check', Icon: Check },
-  { key: 'arrow', label: 'Arrow', Icon: ArrowRight },
-  { key: 'globe', label: 'Globe', Icon: Globe },
-  { key: 'zap', label: 'Zap', Icon: Zap },
-  { key: 'sun', label: 'Sun', Icon: Sun },
-  { key: 'moon', label: 'Moon', Icon: Moon },
+  { key: 'leaf', label: 'Feuille', Icon: Leaf },
+  { key: 'flask', label: 'Soin', Icon: FlaskConical },
+  { key: 'sparkles', label: 'Eclat', Icon: Sparkles },
+  { key: 'shield', label: 'Protect', Icon: ShieldCheck },
+  { key: 'star', label: 'Etoile', Icon: Star },
+  { key: 'heart', label: 'Coeur', Icon: Heart },
+  { key: 'check', label: 'Valide', Icon: Check },
+  { key: 'arrow', label: 'Flèche', Icon: ArrowRight },
+  { key: 'globe', label: 'Monde', Icon: Globe },
+  { key: 'zap', label: 'Flash', Icon: Zap },
+  { key: 'sun', label: 'Jour', Icon: Sun },
+  { key: 'moon', label: 'Nuit', Icon: Moon },
 ];
 
-export default function IconPickerField({ label, value, onChange, hint }) {
+export default function IconPickerField({ label, value, onChange, hint, required, error, description }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      {label && (
-        <label className="text-sm font-medium text-stone-700">{label}</label>
-      )}
-      <div className="grid grid-cols-6 gap-1.5 p-2 border border-stone-200 rounded-xl bg-stone-50">
+    <FieldWrapper label={label} hint={hint} required={required} error={error} description={description}>
+      <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 border border-stone-200 rounded-2xl bg-stone-50/50 shadow-inner">
         {ICONS.map(({ key, label: iconLabel, Icon }) => {
           const isActive = value === key;
           return (
@@ -43,19 +41,18 @@ export default function IconPickerField({ label, value, onChange, hint }) {
               type="button"
               onClick={() => onChange(key)}
               title={iconLabel}
-              className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg text-xs transition ${
+              className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all ${
                 isActive
-                  ? 'bg-[#033a22] text-white ring-2 ring-[#033a22] ring-offset-1'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:border-[#033a22] hover:text-[#033a22]'
+                  ? 'bg-stone-900 text-white shadow-lg ring-1 ring-stone-900'
+                  : 'bg-white text-stone-400 border border-stone-100 hover:border-stone-900 hover:text-stone-900'
               }`}
             >
-              <Icon size={16} />
-              <span className="text-[10px] leading-none">{iconLabel}</span>
+              <Icon size={18} className={isActive ? 'scale-110' : ''} />
+              <span className="text-[8px] font-bold uppercase tracking-widest leading-none">{iconLabel}</span>
             </button>
           );
         })}
       </div>
-      {hint && <p className="text-xs text-stone-400">{hint}</p>}
-    </div>
+    </FieldWrapper>
   );
 }

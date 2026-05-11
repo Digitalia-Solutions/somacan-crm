@@ -2,37 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight as ArrowRightIcon } from 'lucide-react';
-import axios from 'axios';
-import { API_BASE_URL } from '../lib/api';
 
 export default function BlogPreview({ title, subtitle }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const { data } = await axios.get(`${API_BASE_URL}/blogs`);
-        setArticles(data.slice(0, 3));
-      } catch (err) {
-        console.error('Error fetching blogs:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchArticles();
+    fetch('http://localhost:5001/api/blogs')
+      .then(r => r.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : (data.blogs || []);
+        setArticles(items.slice(0, 3));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <section className="py-24 bg-[#fcfaf7] overflow-hidden">
       <div className="section-padding max-w-7xl mx-auto">
-        <header className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+        <header className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-24 gap-8">
           <div className="max-w-xl">
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400 mb-8 flex items-center gap-4">
               <span className="w-8 h-px bg-stone-200" />
               Journal & Lifestyle
             </p>
-            <h2 className="font-display text-5xl md:text-8xl text-somacan-brand leading-tight">
+            <h2 className="font-display text-4xl md:text-6xl lg:text-8xl text-somacan-brand leading-tight">
               {title || "Pensées &"} <br />
               <span className="italic text-stone-400 font-light">{subtitle || "inspirations."}</span>
             </h2>
@@ -42,7 +37,7 @@ export default function BlogPreview({ title, subtitle }) {
           </Link>
         </header>
 
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
           {loading ? (
              <div className="col-span-3 py-20 text-center text-stone-300">Chargement...</div>
           ) : articles.map((article, i) => (

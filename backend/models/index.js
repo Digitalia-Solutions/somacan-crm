@@ -6,12 +6,16 @@ import MenuItem from './MenuItem.js';
 import SiteContent from './SiteContent.js';
 import PageSection from './PageSection.js';
 import GlobalStylePreset from './GlobalStylePreset.js';
+import PageRevision from './PageRevision.js';
 
 Category.hasMany(Product, { foreignKey: 'categoryId' });
 Product.belongsTo(Category, { foreignKey: 'categoryId' });
 
 Page.hasMany(PageSection, { foreignKey: 'pageId', as: 'sections', onDelete: 'CASCADE' });
 PageSection.belongsTo(Page, { foreignKey: 'pageId', as: 'page' });
+
+Page.hasMany(PageRevision, { foreignKey: 'pageId', as: 'revisions', onDelete: 'CASCADE' });
+PageRevision.belongsTo(Page, { foreignKey: 'pageId', as: 'page' });
 
 Menu.hasMany(MenuItem, { foreignKey: 'menuId', as: 'menuItems', onDelete: 'CASCADE' });
 MenuItem.belongsTo(Menu, { foreignKey: 'menuId', as: 'menu' });
@@ -27,4 +31,5 @@ export {
   SiteContent,
   PageSection,
   GlobalStylePreset,
+  PageRevision,
 };

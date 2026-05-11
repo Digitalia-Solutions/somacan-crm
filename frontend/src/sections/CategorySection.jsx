@@ -27,7 +27,7 @@ function getGridConfig(n) {
 
     case 2:
       return {
-        gridClass: 'grid grid-cols-2',
+        gridClass: 'grid grid-cols-1 sm:grid-cols-2',
         getCardClass: () => '',
         isBigCard: () => false,
       };
@@ -35,8 +35,8 @@ function getGridConfig(n) {
     case 3:
       // 3-column grid: first card spans 2 cols, next two span 1 col each
       return {
-        gridClass: 'grid grid-cols-3',
-        getCardClass: (i) => i === 0 ? 'col-span-2' : 'col-span-1',
+        gridClass: 'grid grid-cols-1 sm:grid-cols-3',
+        getCardClass: (i) => i === 0 ? 'sm:col-span-2' : 'col-span-1',
         isBigCard: (i) => i === 0,
       };
 
@@ -76,7 +76,9 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
   useEffect(() => {
     getCategories()
       .then(data => {
-        const ids = categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0 ? categoryIds : null;
+        const ids = categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0
+          ? categoryIds.map(String)
+          : null;
         const result = ids ? data.filter(cat => ids.includes(String(cat.id))) : data;
         if (ids) {
           result.sort((a, b) => ids.indexOf(String(a.id)) - ids.indexOf(String(b.id)));
@@ -101,7 +103,7 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
               <span className="w-8 h-px bg-stone-200" />
               {subtitle || 'Nos Univers'}
             </p>
-            <h2 className="font-display text-5xl md:text-7xl text-somacan-brand leading-tight">
+            <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-somacan-brand leading-tight">
               {title || (
                 <>Explorer par <br />
                   <span className="italic text-stone-400 font-light">catégorie.</span>
@@ -121,13 +123,13 @@ export default function CategorySection({ title, subtitle, categoryIds, showAllL
 
         {/* Grid */}
         {loading ? (
-          <div className="h-[520px] flex items-center justify-center">
+          <div className="h-[360px] md:h-[500px] flex items-center justify-center">
             <div className="w-10 h-10 border-t-2 border-stone-300 rounded-full animate-spin" />
           </div>
         ) : (
           <div
             className={`${gridClass} gap-3 md:gap-4`}
-            style={{ height: 'clamp(480px, 70vh, 720px)' }}
+            style={{ height: 'clamp(360px, 60vw, 500px)' }}
           >
             {categories.map((cat, i) => {
               const big = isBigCard(i);

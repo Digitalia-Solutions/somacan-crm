@@ -68,8 +68,18 @@ router.get('/:slug', async (req, res) => {
 
 // ─── Admin routes ────────────────────────────────────────────
 
-// POST /api/admin/pages — Create page
-router.post('/admin', requireAdmin, async (req, res) => {
+// GET /api/admin/pages/list — List all pages (including unpublished)
+router.get('/admin/list', requireAdmin, async (_req, res) => {
+  try {
+    const pages = await Page.findAll({ order: [['createdAt', 'DESC']] });
+    return res.json(pages);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /api/admin/pages/create — Create page
+router.post('/admin/create', requireAdmin, async (req, res) => {
   try {
     const page = await Page.create(req.body);
     return res.status(201).json(page);

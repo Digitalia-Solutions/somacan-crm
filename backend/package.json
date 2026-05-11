@@ -5,7 +5,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "import:somacan-products": "node scripts/importSomacanCatalog.js"
+    "import:somacan-products": "node scripts/importSomacanCatalog.js",
+    "seed:contact": "node scripts/seed-contact-page.js",
+    "seed:shop": "node scripts/seed-shop-page.js",
+    "seed:about": "node scripts/seed-about-page.js",
+    "seed:blog": "node scripts/seed-blog-page.js",
+    "seed:article-detail": "node scripts/seed-article-detail-page.js",
+    "seed:product-detail": "node scripts/seed-product-detail-page.js",
+    "seed:all-pages": "node scripts/seed-contact-page.js && node scripts/seed-shop-page.js && node scripts/seed-about-page.js && node scripts/seed-blog-page.js && node scripts/seed-article-detail-page.js && node scripts/seed-product-detail-page.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

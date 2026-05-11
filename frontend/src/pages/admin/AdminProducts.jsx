@@ -183,7 +183,7 @@ export default function AdminProducts() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[900px] text-left border-collapse">
               <thead>
                 <tr className="bg-stone-50/50 border-b border-stone-100">
                   <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-stone-400">Produit</th>

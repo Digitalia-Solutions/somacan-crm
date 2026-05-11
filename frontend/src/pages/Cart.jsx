@@ -51,7 +51,7 @@ export default function Cart() {
                 Panier
               </p>
 
-              <h1 className="font-display text-5xl leading-[0.95] text-somacan-brand md:text-7xl">
+              <h1 className="font-display text-4xl leading-[0.95] text-somacan-brand md:text-6xl lg:text-7xl">
                 Votre sélection
                 <br />
                 <span className="font-light italic text-stone-400">
@@ -167,7 +167,7 @@ export default function Cart() {
           </ScrollReveal>
 
           <ScrollReveal>
-            <aside className="rounded-[2.25rem] bg-stone-900 p-7 text-stone-100 shadow-[0_24px_80px_rgba(28,25,23,0.16)] lg:sticky lg:top-28">
+            <aside className="rounded-[2.25rem] bg-stone-900 p-5 text-stone-100 shadow-[0_24px_80px_rgba(28,25,23,0.16)] md:p-7 lg:sticky lg:top-28">
               <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-stone-500">
                 Récapitulatif
               </p>

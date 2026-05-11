@@ -139,7 +139,7 @@ export default function WheelHero({ products: cmsProducts }) {
       <div className="absolute inset-6 md:inset-10 lg:inset-12 bg-white/[0.03] backdrop-blur-[80px] rounded-[3rem] md:rounded-[4rem] border border-white/10 shadow-2xl overflow-hidden flex flex-col z-10">
         
         {/* ── Top Header Navigation ── */}
-        <header className="flex items-center justify-between px-10 py-6 md:px-16">
+        <header className="flex items-center justify-between px-5 py-4 md:px-10 md:py-6 lg:px-16">
           <Link to="/" className="flex items-center group">
             <img src={logoDark} alt="Somacan" className="h-10 md:h-12 w-auto transition-all duration-700 group-hover:scale-105" />
           </Link>
@@ -261,10 +261,10 @@ export default function WheelHero({ products: cmsProducts }) {
         )}
 
         {/* ── Main Content Body ── */}
-        <div className="flex-1 relative grid grid-cols-12 items-center px-10 md:px-16 lg:px-24 pb-12">
-          
+        <div className="flex-1 relative grid grid-cols-12 items-center px-4 md:px-10 lg:px-24 pb-4 md:pb-12 overflow-hidden">
+
           {/* Left: Product Info */}
-          <div className="col-span-12 lg:col-span-4 z-20 flex flex-col items-start order-2 lg:order-1">
+          <div className="col-span-12 lg:col-span-4 z-20 flex flex-col items-start order-2 lg:order-1 pt-3 md:pt-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeProduct.id}
@@ -273,14 +273,14 @@ export default function WheelHero({ products: cmsProducts }) {
                 exit={{ x: -40, opacity: 0 }}
                 transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Link to="/shop" className="flex items-center gap-3 text-white/40 mb-10 group hover:text-white transition-colors">
+                <Link to="/shop" className="flex items-center gap-3 text-white/40 mb-5 md:mb-10 group hover:text-white transition-colors">
                   <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white transition-all">
                     <ArrowLeft size={12} />
                   </div>
                   <span className="text-[9px] font-bold uppercase tracking-[0.4em]">Collection Boutique</span>
                 </Link>
-                
-                <h1 className="font-display text-5xl md:text-7xl xl:text-8xl text-white leading-[0.85] mb-8">
+
+                <h1 className="font-display text-white leading-[0.88] mb-4 md:mb-8" style={{ fontSize: 'clamp(2rem, 7vw, 5rem)' }}>
                   {activeProduct.name.split(' ').map((word, i) => (
                     <span 
                       key={i} 
@@ -295,15 +295,15 @@ export default function WheelHero({ products: cmsProducts }) {
                   ))}
                 </h1>
                 
-                <div className="flex items-center gap-4 mb-10">
-                  <span className="px-6 py-2.5 rounded-full border border-white/10 text-white text-[10px] font-bold uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md">
+                <div className="flex items-center gap-3 mb-5 md:mb-10">
+                  <span className="px-4 py-2 rounded-full border border-white/10 text-white text-[10px] font-bold uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md">
                     {activeProduct.dosage}
                   </span>
-                  <div className="w-12 h-[1px] bg-white/10" />
-                  <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest italic">Formule Botanique</span>
+                  <div className="w-8 h-[1px] bg-white/10 hidden sm:block" />
+                  <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest italic hidden sm:block">Formule Botanique</span>
                 </div>
 
-                <p className="text-white/40 text-sm font-light leading-relaxed max-w-[340px]">
+                <p className="text-white/40 text-sm font-light leading-relaxed max-w-[340px] hidden md:block">
                   {activeProduct.description}
                 </p>
               </motion.div>
@@ -312,9 +312,9 @@ export default function WheelHero({ products: cmsProducts }) {
 
           {/* Center: 3D Wheel Slider */}
           <div className="col-span-12 lg:col-span-4 h-full flex items-center justify-center relative perspective-[1200px] z-10 order-1 lg:order-2">
-            <div 
+            <div
               ref={wheelRef}
-              className="relative w-full h-[300px] md:h-[500px] flex items-center justify-center"
+              className="relative w-full h-[220px] sm:h-[280px] md:h-[500px] flex items-center justify-center"
               style={{ transformStyle: 'preserve-3d' }}
             >
               {currentProducts.map((prod, i) => {
@@ -358,8 +358,8 @@ export default function WheelHero({ products: cmsProducts }) {
             </div>
           </div>
 
-          {/* Right: Options & Info */}
-          <div className="col-span-12 lg:col-span-4 flex flex-col items-center lg:items-end justify-center z-20 order-3">
+          {/* Right: Options & Info — hidden on mobile, visible on lg+ */}
+          <div className="hidden lg:flex col-span-12 lg:col-span-4 flex-col items-center lg:items-end justify-center z-20 order-3">
             <AnimatePresence mode="wait">
               <motion.div
                  key={`options-${activeProduct.id}`}
@@ -402,40 +402,40 @@ export default function WheelHero({ products: cmsProducts }) {
         </div>
 
         {/* ── Fixed Bottom Actions Bar ── */}
-        <div className="h-32 flex items-center justify-between px-10 md:px-16 lg:px-24 border-t border-white/5 z-40 bg-white/[0.01]">
+        <div className="h-20 md:h-28 flex items-center justify-between gap-3 px-4 md:px-10 lg:px-24 border-t border-white/5 z-40 bg-white/[0.01]">
           <motion.div
             key={`price-${activeProduct.id}`}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="flex items-baseline gap-5"
+            className="flex items-baseline gap-3"
           >
-             <span 
-              className={`font-display ${activeProduct.priceSize && !activeProduct.priceSize.includes('px') ? `text-${activeProduct.priceSize}` : 'text-7xl md:text-8xl'} text-white`}
-              style={{ 
+            <span
+              className="font-display text-white"
+              style={{
+                fontSize: 'clamp(2rem, 8vw, 5rem)',
                 color: activeProduct.priceColor || undefined,
-                fontSize: activeProduct.priceSize && activeProduct.priceSize.includes('px') ? activeProduct.priceSize : undefined
               }}
-             >
+            >
               {activeProduct.price}
-             </span>
-             <div className="flex flex-col">
-                <span className="text-white/40 text-lg font-bold uppercase tracking-[0.4em]">MAD</span>
-                <span className="text-white/10 text-[8px] uppercase tracking-[0.2em] font-bold">Livraison Incluse</span>
-             </div>
+            </span>
+            <div className="flex flex-col">
+              <span className="text-white/40 text-sm md:text-lg font-bold uppercase tracking-[0.4em]">MAD</span>
+              <span className="text-white/10 text-[7px] uppercase tracking-[0.2em] font-bold hidden md:block">Livraison Incluse</span>
+            </div>
           </motion.div>
 
-          <div className="flex items-center gap-6 lg:gap-10">
-            {/* Quantity Selector */}
-            <div className="flex items-center gap-8 px-6 py-4 rounded-[1.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl">
-              <button 
-                onClick={() => quantity > 1 && setQuantity(quantity - 1)} 
+          <div className="flex items-center gap-3 md:gap-6 lg:gap-10">
+            {/* Quantity Selector — hidden on mobile to save space */}
+            <div className="hidden sm:flex items-center gap-6 px-5 py-3 rounded-[1.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl">
+              <button
+                onClick={() => quantity > 1 && setQuantity(quantity - 1)}
                 className="text-white/30 hover:text-white transition-colors"
               >
                 <Minus size={16} strokeWidth={1.5} />
               </button>
-              <span className="text-white font-display text-2xl w-6 text-center">{quantity}</span>
-              <button 
-                onClick={() => setQuantity(quantity + 1)} 
+              <span className="text-white font-display text-xl w-5 text-center">{quantity}</span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
                 className="text-white/30 hover:text-white transition-colors"
               >
                 <Plus size={16} strokeWidth={1.5} />
@@ -443,13 +443,14 @@ export default function WheelHero({ products: cmsProducts }) {
             </div>
 
             {/* Main Action Button */}
-            <button 
+            <button
               onClick={() => addToCart(activeProduct, quantity)}
-              className="group relative overflow-hidden px-12 md:px-16 py-6 bg-white text-black font-bold uppercase tracking-[0.4em] text-[10px] rounded-[1.5rem] hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all duration-500"
+              className="group relative overflow-hidden px-5 md:px-10 lg:px-16 py-3 md:py-5 bg-white text-black font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] rounded-[1.2rem] md:rounded-[1.5rem] hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all duration-500"
             >
-              <span className="relative z-10 flex items-center gap-4">
-                Acheter Maintenant
-                <ShoppingBag size={15} strokeWidth={2} />
+              <span className="relative z-10 flex items-center gap-2 md:gap-4">
+                <span className="hidden sm:inline">Acheter Maintenant</span>
+                <span className="sm:hidden">Acheter</span>
+                <ShoppingBag size={14} strokeWidth={2} />
               </span>
               <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </button>

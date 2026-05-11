@@ -39,6 +39,8 @@ export {
   useWidgetTreeStagger,
 } from './WidgetRegistry.jsx';
 
+export { default as WidgetRenderer, WidgetTreeRenderer } from './WidgetRenderer.jsx';
+
 // Responsive Engine
 export {
   normalizeResponsiveConfig,
@@ -54,6 +56,8 @@ export {
   CMS_DEVICES,
   DEFAULT_DEVICE_RESPONSIVE,
 } from './ResponsiveEngine';
+
+export { default as StylePresetField } from '../fields/StylePresetField';
 
 // Global Style Engine
 export {

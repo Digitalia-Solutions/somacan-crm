@@ -253,6 +253,119 @@ function FAQWidgetRenderer({ widget }) {
   );
 }
 
+function ProductShowcaseWidgetRenderer({ widget }) {
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const limit = widget.props?.limit || 4;
+  const categoryId = widget.props?.categoryId || '';
+
+  React.useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('limit', limit);
+    if (categoryId) params.set('categoryId', categoryId);
+    fetch(`http://localhost:5001/api/products?${params}`)
+      .then(r => r.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : (data.products || data.items || []);
+        setProducts(items.slice(0, limit));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [limit, categoryId]);
+
+  return (
+    <WidgetShell widget={widget} scope="card">
+      <div className="space-y-4">
+        {widget.props?.heading && (
+          <h2 className="font-display text-3xl text-stone-900">{widget.props.heading}</h2>
+        )}
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: limit }).map((_, i) => (
+              <div key={i} className="aspect-[4/5] rounded-[1rem] bg-stone-100 animate-pulse" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <p className="text-sm text-stone-400 text-center py-8">Aucun produit trouvé.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {products.map(p => (
+              <a key={p.id || p.slug} href={`/shop/${p.slug}`} className="group flex flex-col gap-3">
+                {p.images?.[0] || p.image ? (
+                  <img
+                    src={p.images?.[0]?.url || p.images?.[0] || p.image}
+                    alt={p.name || p.title}
+                    className="aspect-[4/5] w-full rounded-[1rem] object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="aspect-[4/5] rounded-[1rem] bg-stone-100" />
+                )}
+                <div>
+                  <p className="text-sm font-semibold text-stone-900 truncate">{p.name || p.title}</p>
+                  <p className="text-xs text-stone-500">{p.price ? `${p.price} MAD` : ''}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </WidgetShell>
+  );
+}
+
+function CategoryGridWidgetRenderer({ widget }) {
+  const [categories, setCategories] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch('http://localhost:5001/api/categories')
+      .then(r => r.json())
+      .then(data => {
+        const items = Array.isArray(data) ? data : (data.categories || []);
+        setCategories(items);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <WidgetShell widget={widget} scope="card">
+      <div className="space-y-4">
+        {widget.props?.heading && (
+          <h2 className="font-display text-3xl text-stone-900">{widget.props.heading}</h2>
+        )}
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[1,2,3].map(i => (
+              <div key={i} className="aspect-[16/10] rounded-[1rem] bg-stone-100 animate-pulse" />
+            ))}
+          </div>
+        ) : categories.length === 0 ? (
+          <p className="text-sm text-stone-400 text-center py-8">Aucune catégorie trouvée.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {categories.map(c => (
+              <a key={c.id || c.slug} href={`/shop?category=${c.slug}`} className="group relative overflow-hidden rounded-[1rem] aspect-[16/10] bg-stone-100">
+                {(c.image || c.coverImage) && (
+                  <img
+                    src={c.image || c.coverImage}
+                    alt={c.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent" />
+                <div className="absolute bottom-3 left-3">
+                  <p className="text-white font-semibold text-sm">{c.name}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </WidgetShell>
+  );
+}
+
 /* ── Registry ─────────────────────────────────────────────────── */
 
 const COMPONENTS = {
@@ -268,6 +381,8 @@ const COMPONENTS = {
   IconWidget: IconWidgetRenderer,
   TestimonialWidget: TestimonialWidgetRenderer,
   FAQWidget: FAQWidgetRenderer,
+  ProductShowcaseWidget: ProductShowcaseWidgetRenderer,
+  CategoryGridWidget: CategoryGridWidgetRenderer,
 };
 
 export const WIDGET_REGISTRY = Object.fromEntries(
@@ -279,6 +394,28 @@ export const WIDGET_REGISTRY = Object.fromEntries(
     },
   ]),
 );
+
+// Data-fetching widgets (not in shared WIDGET_DEFINITIONS, defined only in frontend)
+WIDGET_REGISTRY['ProductShowcaseWidget'] = {
+  type: 'ProductShowcaseWidget',
+  label: 'Product Showcase',
+  renderer: ProductShowcaseWidgetRenderer,
+  fields: [
+    { name: 'heading', label: 'Heading', type: 'text' },
+    { name: 'limit', label: 'Number of products', type: 'text' },
+    { name: 'categoryId', label: 'Category filter (ID)', type: 'text' },
+  ],
+  defaultProps: { heading: '', limit: 4, categoryId: '' },
+};
+WIDGET_REGISTRY['CategoryGridWidget'] = {
+  type: 'CategoryGridWidget',
+  label: 'Category Grid',
+  renderer: CategoryGridWidgetRenderer,
+  fields: [
+    { name: 'heading', label: 'Heading', type: 'text' },
+  ],
+  defaultProps: { heading: '' },
+};
 
 export { WIDGET_TYPES, getWidgetDefinition };
 
