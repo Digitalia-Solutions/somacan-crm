@@ -124,10 +124,10 @@ export default function AdminOverview() {
     .slice(0, 4);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 md:space-y-8">
 
       {/* ── KPI Stats ── */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="CA du mois"        value={fmtMoney(revenueThisMonth)} sub={`Total: ${fmtMoney(totalRevenue)}`}  icon={TrendingUp}  color="text-emerald-600" loading={loading} />
         <StatCard label="Commandes / mois"  value={ordersThisMonth.length}      sub={`${pendingOrders} en attente`}       icon={ShoppingBag} color="text-amber-600"   loading={loading} />
         <StatCard label="Panier moyen"      value={fmtMoney(avgCart)}           sub={`${orders.length} commandes total`}  icon={CreditCard}  color="text-violet-600"  loading={loading} />
@@ -136,25 +136,25 @@ export default function AdminOverview() {
 
       {/* ── Alerts row ── */}
       {!loading && (pendingOrders > 0 || newContacts > 0 || lowStockCount > 0) && (
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2 md:gap-3">
           {pendingOrders > 0 && (
-            <Link to="/admin/orders" className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100 transition-colors">
+            <Link to="/admin/orders" className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs font-bold text-amber-700 hover:bg-amber-100 transition-colors">
               <AlertCircle size={13} />
-              {pendingOrders} commande{pendingOrders > 1 ? 's' : ''} en attente
+              <span className="truncate max-w-[150px] sm:max-w-none">{pendingOrders} commande{pendingOrders > 1 ? 's' : ''} en attente</span>
               <ArrowRight size={12} />
             </Link>
           )}
           {newContacts > 0 && (
-            <Link to="/admin/forms" className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100 transition-colors">
+            <Link to="/admin/forms" className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs font-bold text-blue-700 hover:bg-blue-100 transition-colors">
               <Mail size={13} />
-              {newContacts} nouveau{newContacts > 1 ? 'x' : ''} message{newContacts > 1 ? 's' : ''}
+              <span className="truncate max-w-[150px] sm:max-w-none">{newContacts} message{newContacts > 1 ? 's' : ''}</span>
               <ArrowRight size={12} />
             </Link>
           )}
           {lowStockCount > 0 && (
-            <Link to="/admin/products" className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-100 transition-colors">
+            <Link to="/admin/products" className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs font-bold text-red-700 hover:bg-red-100 transition-colors">
               <XCircle size={13} />
-              {lowStockCount} produit{lowStockCount > 1 ? 's' : ''} stock bas
+              <span className="truncate max-w-[150px] sm:max-w-none">{lowStockCount} stock bas</span>
               <ArrowRight size={12} />
             </Link>
           )}
@@ -162,12 +162,12 @@ export default function AdminOverview() {
       )}
 
       {/* ── Main grid: recent orders + contacts ── */}
-      <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
+      <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_360px]">
 
         {/* Recent orders */}
-        <div className="rounded-[2rem] border border-stone-200/70 bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display text-2xl text-somacan-brand">Dernières commandes</h2>
+        <div className="rounded-[1.5rem] md:rounded-[2rem] border border-stone-200/70 bg-white p-4 md:p-6 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between mb-4 md:mb-5">
+            <h2 className="font-display text-xl md:text-2xl text-somacan-brand">Commandes</h2>
             <Link to="/admin/orders" className="text-[10px] font-bold uppercase tracking-[0.25em] text-stone-400 hover:text-stone-700 flex items-center gap-1">
               Tout voir <ArrowRight size={11} />
             </Link>
@@ -182,18 +182,20 @@ export default function AdminOverview() {
           ) : recentOrders.length === 0 ? (
             <p className="py-8 text-center text-sm text-stone-400">Aucune commande.</p>
           ) : (
-            <div className="divide-y divide-stone-50">
+            <div className="divide-y divide-stone-50 overflow-x-auto">
               {recentOrders.map((order) => {
                 const customer = order.customer || {};
                 const name = [customer.firstName, customer.lastName].filter(Boolean).join(' ') || customer.email || 'Client';
                 return (
-                  <div key={order.id} className="flex items-center justify-between gap-4 py-3.5">
-                    <div className="min-w-0">
+                  <div key={order.id} className="flex items-center justify-between gap-4 py-3.5 min-w-[300px]">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-stone-800">{name}</p>
                       <p className="text-[10px] text-stone-400">{formatDate(order.createdAt)} · #{order.id}</p>
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-3">
-                      {statusBadge(order.status)}
+                      <div className="hidden xs:block">
+                        {statusBadge(order.status)}
+                      </div>
                       <span className="text-sm font-bold text-somacan-brand whitespace-nowrap">
                         {fmtMoney(order.totalAmount)}
                       </span>
@@ -206,12 +208,12 @@ export default function AdminOverview() {
         </div>
 
         {/* Right column */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
 
           {/* Recent messages */}
-          <div className="rounded-[2rem] border border-stone-200/70 bg-white p-6 shadow-sm">
+          <div className="rounded-[1.5rem] md:rounded-[2rem] border border-stone-200/70 bg-white p-4 md:p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl text-somacan-brand">Messages récents</h2>
+              <h2 className="font-display text-lg md:text-xl text-somacan-brand">Messages</h2>
               <Link to="/admin/forms" className="text-[10px] font-bold uppercase tracking-[0.25em] text-stone-400 hover:text-stone-700 flex items-center gap-1">
                 Tout <ArrowRight size={11} />
               </Link>
@@ -231,7 +233,7 @@ export default function AdminOverview() {
                       <p className="truncate text-sm font-medium text-stone-800">{c.firstName} {c.lastName}</p>
                       <p className="truncate text-[10px] text-stone-400">{c.subject || c.email}</p>
                     </div>
-                    <p className="flex-shrink-0 text-[10px] text-stone-400">{formatDate(c.createdAt)}</p>
+                    <p className="flex-shrink-0 text-[9px] md:text-[10px] text-stone-400">{formatDate(c.createdAt)}</p>
                   </div>
                 ))}
               </div>
@@ -239,23 +241,23 @@ export default function AdminOverview() {
           </div>
 
           {/* Products summary */}
-          <div className="rounded-[2rem] border border-stone-200/70 bg-white p-6 shadow-sm">
-            <h2 className="font-display text-xl text-somacan-brand mb-4">Catalogue</h2>
+          <div className="rounded-[1.5rem] md:rounded-[2rem] border border-stone-200/70 bg-white p-4 md:p-6 shadow-sm">
+            <h2 className="font-display text-lg md:text-xl text-somacan-brand mb-4">Catalogue</h2>
             {loading ? (
               <div className="h-16 animate-pulse rounded-xl bg-stone-100" />
             ) : (
-              <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="grid grid-cols-3 gap-2 md:gap-3 text-center">
                 <div className="rounded-xl bg-stone-50 py-3">
-                  <p className="font-display text-2xl text-somacan-brand">{products.length}</p>
-                  <p className="text-[10px] text-stone-400 mt-1">Total</p>
+                  <p className="font-display text-xl md:text-2xl text-somacan-brand">{products.length}</p>
+                  <p className="text-[9px] md:text-[10px] text-stone-400 mt-1 uppercase font-bold">Total</p>
                 </div>
                 <div className="rounded-xl bg-emerald-50 py-3">
-                  <p className="font-display text-2xl text-emerald-700">{products.filter(p => p.active !== false).length}</p>
-                  <p className="text-[10px] text-emerald-500 mt-1">Actifs</p>
+                  <p className="font-display text-xl md:text-2xl text-emerald-700">{products.filter(p => p.active !== false).length}</p>
+                  <p className="text-[9px] md:text-[10px] text-emerald-500 mt-1 uppercase font-bold">Actifs</p>
                 </div>
                 <div className="rounded-xl bg-red-50 py-3">
-                  <p className="font-display text-2xl text-red-600">{lowStockCount}</p>
-                  <p className="text-[10px] text-red-400 mt-1">Stock bas</p>
+                  <p className="font-display text-xl md:text-2xl text-red-600">{lowStockCount}</p>
+                  <p className="text-[9px] md:text-[10px] text-red-400 mt-1 uppercase font-bold">Stock</p>
                 </div>
               </div>
             )}
@@ -264,19 +266,19 @@ export default function AdminOverview() {
       </div>
 
       {/* ── Nav cards ── */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 pb-8 md:pb-0">
         {NAV_CARDS.map((card) => (
           <Link
             key={card.to}
             to={card.to}
-            className="group flex items-start gap-4 rounded-[1.75rem] border border-stone-200/70 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+            className="group flex items-start gap-4 rounded-[1.5rem] md:rounded-[1.75rem] border border-stone-200/70 bg-white p-4 md:p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
           >
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-stone-50 text-somacan-brand transition-colors group-hover:bg-somacan-brand group-hover:text-white">
               <card.icon size={18} />
             </div>
             <div>
-              <p className="font-semibold text-stone-800">{card.title}</p>
-              <p className="mt-0.5 text-xs leading-5 text-stone-400">{card.text}</p>
+              <p className="font-semibold text-sm md:text-base text-stone-800">{card.title}</p>
+              <p className="mt-0.5 text-[11px] md:text-xs leading-relaxed text-stone-400">{card.text}</p>
             </div>
           </Link>
         ))}

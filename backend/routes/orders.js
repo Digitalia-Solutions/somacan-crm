@@ -7,6 +7,29 @@ import { sendGuestOrderEmail } from '../services/mailer.js';
 
 const router = express.Router();
 
+function parseJsonField(value, fallback) {
+  if (value == null || value === '') return fallback;
+  if (typeof value !== 'string') return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function serializeOrder(order) {
+  const plain = order?.toJSON ? order.toJSON() : order;
+
+  return {
+    ...plain,
+    customer: parseJsonField(plain.customer, {}),
+    items: parseJsonField(plain.items, []),
+    couponSnapshot: parseJsonField(plain.couponSnapshot, null),
+    shippingSnapshot: parseJsonField(plain.shippingSnapshot, null),
+  };
+}
+
 router.post('/', attachUserIfPresent, async (req, res) => {
   try {
     const {
@@ -90,7 +113,7 @@ router.post('/', attachUserIfPresent, async (req, res) => {
     }
 
     return res.status(201).json({
-      ...order.toJSON(),
+      ...serializeOrder(order),
       guestPortalUrl,
       accountClaimUrl,
     });
@@ -106,7 +129,7 @@ router.get('/mine', requireAuth, async (req, res) => {
       order: [['createdAt', 'DESC']],
     });
 
-    return res.json(orders);
+    return res.json(orders.map(serializeOrder));
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -127,7 +150,7 @@ router.get('/guest/:id', async (req, res) => {
     const frontendBaseUrl = process.env.FRONTEND_APP_URL || 'http://localhost:3000';
 
     return res.json({
-      ...order.toJSON(),
+      ...serializeOrder(order),
       guestPortalUrl: `${frontendBaseUrl}/guest/orders/${order.id}?token=${token}`,
       accountClaimUrl: order.guestAccountToken
         ? `${frontendBaseUrl}/claim-account?token=${order.guestAccountToken}`
@@ -142,7 +165,7 @@ router.get('/:id', async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
-    res.json(order);
+    res.json(serializeOrder(order));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

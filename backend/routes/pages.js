@@ -8,11 +8,56 @@ import { createResponsiveValue } from '../../shared/cms/responsive.js';
 
 const router = express.Router();
 
+function isNumericKeyObject(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const keys = Object.keys(value);
+  return keys.length > 0 && keys.every((key) => /^\d+$/.test(key));
+}
+
+function decodeNumericKeyObject(value) {
+  return Object.keys(value)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((key) => value[key])
+    .join('');
+}
+
+function parseJsonLike(value, fallback) {
+  let current = value;
+
+  for (let i = 0; i < 3; i += 1) {
+    if (current == null || current === '') return fallback;
+
+    if (typeof current === 'string') {
+      try {
+        current = JSON.parse(current);
+        continue;
+      } catch {
+        return current;
+      }
+    }
+
+    if (isNumericKeyObject(current)) {
+      current = decodeNumericKeyObject(current);
+      continue;
+    }
+
+    return current;
+  }
+
+  return current ?? fallback;
+}
+
 function normalizePublicSection(section) {
   const raw = typeof section.toJSON === 'function' ? section.toJSON() : section;
   return {
     ...raw,
-    responsive: createResponsiveValue(raw.responsive || {}),
+    content: parseJsonLike(raw.content, {}),
+    settings: parseJsonLike(raw.settings, {}),
+    animation: parseJsonLike(raw.animation, {}),
+    responsive: createResponsiveValue(parseJsonLike(raw.responsive, {})),
+    seo: parseJsonLike(raw.seo, {}),
+    widgetTree: parseJsonLike(raw.widgetTree, null),
+    globalStyleOverrides: parseJsonLike(raw.globalStyleOverrides, {}),
   };
 }
 

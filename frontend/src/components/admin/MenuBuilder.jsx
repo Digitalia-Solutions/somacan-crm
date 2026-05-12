@@ -23,17 +23,30 @@ const DEFAULT_MENU_SETTINGS = {
   stickyTopPadding: '12px',
 };
 
+function parseJsonField(value, fallback) {
+  if (value == null || value === '') return fallback;
+  if (typeof value !== 'string') return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
 function normalizeMenuData(menu) {
   if (!menu) return { items: [], settings: { ...DEFAULT_MENU_SETTINGS } };
-  if (Array.isArray(menu.items)) {
-    return { items: menu.items, settings: { ...DEFAULT_MENU_SETTINGS } };
+  const parsedItems = parseJsonField(menu.items, []);
+
+  if (Array.isArray(parsedItems)) {
+    return { items: parsedItems, settings: { ...DEFAULT_MENU_SETTINGS } };
   }
-  if (menu.items && typeof menu.items === 'object') {
+  if (parsedItems && typeof parsedItems === 'object') {
     return {
-      items: Array.isArray(menu.items.items) ? menu.items.items : [],
+      items: Array.isArray(parsedItems.items) ? parsedItems.items : [],
       settings: {
         ...DEFAULT_MENU_SETTINGS,
-        ...(menu.items.settings && typeof menu.items.settings === 'object' ? menu.items.settings : {}),
+        ...(parsedItems.settings && typeof parsedItems.settings === 'object' ? parsedItems.settings : {}),
       },
     };
   }

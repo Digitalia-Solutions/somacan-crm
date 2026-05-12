@@ -31,6 +31,29 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
+function parseJsonField(value, fallback) {
+  if (value == null || value === '') return fallback;
+  if (typeof value !== 'string') return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function serializeOrder(order) {
+  const plain = order?.toJSON ? order.toJSON() : order;
+
+  return {
+    ...plain,
+    customer: parseJsonField(plain.customer, {}),
+    items: parseJsonField(plain.items, []),
+    couponSnapshot: parseJsonField(plain.couponSnapshot, null),
+    shippingSnapshot: parseJsonField(plain.shippingSnapshot, null),
+  };
+}
+
 router.use(requireAdmin);
 
 router.get('/settings/shipping', async (_req, res) => {
@@ -125,7 +148,7 @@ router.get('/orders', async (req, res) => {
       return true;
     });
 
-    return res.json(filteredOrders);
+    return res.json(filteredOrders.map(serializeOrder));
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -150,7 +173,7 @@ router.patch('/orders/:id', async (req, res) => {
     if (notes !== undefined) order.notes = notes;
     await order.save();
 
-    return res.json(order);
+    return res.json(serializeOrder(order));
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }

@@ -15,6 +15,9 @@ export default function OfferSection({
   buttonText,
   buttonLink,
   badgeText,
+  textMaxWidth,
+  imageAspectRatio,
+  badgeSize,
   sectionMinHeight,
   contentMaxWidth,
   contentGap,
@@ -49,7 +52,7 @@ export default function OfferSection({
         <div className="grid lg:grid-cols-2 gap-24 lg:gap-40 items-center" style={layoutStyle}>
           
           <div className="relative group">
-            <div className="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: imageAspectRatio || '4 / 5' }}>
               <motion.img
                 src={resolveCmsAssetUrl(image) || resolveCmsAssetUrl('/asset/ChatGPT Image 29 avr. 2026, 12_21_25.png')}
                 alt={imageAlt || 'Rituel Somacan'}
@@ -60,7 +63,7 @@ export default function OfferSection({
             </div>
 
             {/* Spinning circle badge */}
-            <div className="absolute -top-8 -left-8 z-20 w-40 h-40">
+            <div className="absolute -top-8 -left-8 z-20" style={{ width: badgeSize || '10rem', height: badgeSize || '10rem' }}>
               <div className="absolute inset-0 rounded-full glass-card shadow-2xl" />
               <svg
                 viewBox="0 0 150 150"
@@ -98,7 +101,7 @@ export default function OfferSection({
               </h2>
             </header>
 
-            <p className="text-xl text-stone-500 font-light leading-relaxed max-w-md" style={descriptionStyle}>
+            <p className="text-xl text-stone-500 font-light leading-relaxed" style={{ maxWidth: textMaxWidth || '28rem', ...descriptionStyle }}>
               {description || "Plus qu'un simple soin, une invitation au voyage intérieur. Profitez de notre rituel corps signature, une édition limitée conçue pour l'apaisement absolu."}
             </p>
 

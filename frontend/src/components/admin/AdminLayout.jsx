@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { 
   ChevronRight, FileText, FolderTree, KeyRound, LayoutDashboard, Layers, 
   LogOut, Mail, MapPinned, Package, PanelTop, PanelBottom, Palette, 
-  PercentCircle, ShoppingBag, Image, Menu, Home, Settings
+  PercentCircle, ShoppingBag, Image, Menu, Home, Settings, X
 } from 'lucide-react';
 import { ADMIN_STORAGE_KEY } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
@@ -50,11 +50,17 @@ export default function AdminLayout() {
   const { isAdmin, logout } = useAuth();
   const [inputKey, setInputKey] = useState(() => window.localStorage.getItem(ADMIN_STORAGE_KEY) || '');
   const [hasKey, setHasKey] = useState(() => Boolean(window.localStorage.getItem(ADMIN_STORAGE_KEY)));
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const currentItem = useMemo(
     () => navItems.find((item) => item.match === location.pathname) || navItems[0],
     [location.pathname]
   );
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   function saveKey(event) {
     event.preventDefault();
@@ -79,20 +85,20 @@ export default function AdminLayout() {
               <KeyRound size={28} />
             </div>
             <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.4em] text-stone-400">Authentification</p>
-            <h1 className="mt-4 font-display text-6xl text-somacan-brand">Espace Admin</h1>
-            <p className="mt-6 mx-auto max-w-md text-sm leading-7 text-stone-500">
+            <h1 className="mt-4 font-display text-4xl sm:text-6xl text-somacan-brand">Espace Admin</h1>
+            <p className="mt-6 mx-auto max-w-md text-sm leading-7 text-stone-500 px-4">
               Veuillez saisir votre clé d'accès pour administrer la boutique Somacan.
             </p>
 
-            <form onSubmit={saveKey} className="mt-10 max-w-md mx-auto flex flex-col gap-4">
+            <form onSubmit={saveKey} className="mt-10 max-w-md mx-auto flex flex-col gap-4 px-4">
               <input
                 type="password"
                 value={inputKey}
                 onChange={(event) => setInputKey(event.target.value)}
                 placeholder="ADMIN_API_KEY"
-                className="h-16 rounded-2xl border border-stone-200 bg-stone-50 px-6 text-center text-lg font-mono tracking-widest text-stone-900 outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900 transition-all"
+                className="h-14 sm:h-16 rounded-2xl border border-stone-200 bg-stone-50 px-6 text-center text-lg font-mono tracking-widest text-stone-900 outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900 transition-all"
               />
-              <Button type="submit" variant="primary" size="lg" className="h-16">
+              <Button type="submit" variant="primary" size="lg" className="h-14 sm:h-16">
                 Déverrouiller l'accès
               </Button>
             </form>
@@ -104,10 +110,24 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-[100dvh] bg-[#f8f4ee]">
-    <div className="flex h-[100dvh] overflow-hidden">
+      <div className="relative flex h-[100dvh] overflow-hidden">
+      
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 z-[60] bg-stone-900/40 backdrop-blur-sm lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="shrink-0 w-72 border-r border-stone-200 bg-stone-950 text-stone-400 flex flex-col overflow-y-auto">
-          <div className="shrink-0 p-8 pb-4">
+      <aside className={`fixed inset-y-0 left-0 z-[70] w-72 bg-stone-950 text-stone-400 flex flex-col transition-transform duration-500 ease-in-out lg:static lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className="shrink-0 p-8 pb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-stone-950 font-display text-2xl font-bold shadow-lg">S</div>
               <div>
@@ -115,6 +135,9 @@ export default function AdminLayout() {
                 <p className="text-[9px] uppercase tracking-[0.3em] text-stone-500 mt-1 font-bold">Backoffice V2</p>
               </div>
             </div>
+            <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden text-stone-500 hover:text-white transition-colors">
+              <X className="w-6 h-6" />
+            </button>
           </div>
 
           <nav className="flex-1 px-4 py-8 overflow-y-auto scrollbar-hide">
@@ -170,46 +193,53 @@ export default function AdminLayout() {
       {/* Main area */}
       <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
           {/* Topbar */}
-          <header className="shrink-0 z-40 h-20 bg-white/80 backdrop-blur-md border-b border-stone-200 px-10 flex items-center justify-between">
+          <header className="shrink-0 z-40 h-20 bg-white/80 backdrop-blur-md border-b border-stone-200 px-4 md:px-10 flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2 text-stone-400">
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2 rounded-xl bg-stone-100 text-stone-900 hover:bg-stone-200 transition-colors"
+                aria-label="Open menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <div className="hidden sm:flex items-center gap-2 text-stone-400">
                 <Home size={16} />
                 <ChevronRight size={14} />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-stone-400 font-medium">Administration</span>
-                <ChevronRight size={14} className="text-stone-400" />
-                <span className="text-stone-900 font-bold">{currentItem.label}</span>
+                <span className="text-stone-400 font-medium hidden xs:inline">Admin</span>
+                <ChevronRight size={14} className="text-stone-400 hidden xs:inline" />
+                <span className="text-stone-900 font-bold truncate max-w-[120px] sm:max-w-none">{currentItem.label}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <a 
                 href="/" 
                 target="_blank" 
-                className="text-xs font-bold text-stone-500 hover:text-stone-900 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-stone-50 transition-colors"
+                className="text-[10px] md:text-xs font-bold text-stone-500 hover:text-stone-900 flex items-center gap-2 px-2 md:px-3 py-2 rounded-lg hover:bg-stone-50 transition-colors"
               >
-                Voir le site
+                <span className="hidden xs:inline">Voir le site</span>
                 <ChevronRight size={14} />
               </a>
-              <div className="h-8 w-px bg-stone-200" />
+              <div className="h-8 w-px bg-stone-200 hidden sm:block" />
               <div className="flex items-center gap-3">
                 <div className="text-right hidden sm:block">
-                  <p className="text-xs font-bold text-stone-900 leading-none">Administrateur</p>
+                  <p className="text-xs font-bold text-stone-900 leading-none">Admin</p>
                   <p className="text-[10px] text-stone-400 mt-1 uppercase font-bold tracking-tighter">Accès total</p>
                 </div>
-                <div className="h-10 w-10 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-400">
-                  <Settings size={20} />
+                <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-400">
+                  <Settings size={18} />
                 </div>
               </div>
             </div>
           </header>
 
-          <div className="flex-1 min-h-0 overflow-y-auto p-10">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-10">
             <Outlet />
           </div>
-      </main>
-    </div>
+        </main>
+      </div>
     </div>
   );
 }

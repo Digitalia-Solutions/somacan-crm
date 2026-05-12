@@ -6,13 +6,14 @@ export default defineConfig({
   publicDir: 'src/public',
   server: {
     port: 3000,
+    allowedHosts: ['.ngrok-free.app', '.ngrok-free.dev'],
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: 'http://localhost:5000',
         changeOrigin: true
       },
       '/public': {
-        target: 'http://localhost:5001',
+        target: 'http://localhost:5000',
         changeOrigin: true
       }
     }

@@ -14,6 +14,7 @@ export default function NewsletterSection({
   successEyebrow,
   successMessage,
   disclaimer,
+  formMaxWidth,
   sectionMinHeight,
   contentMaxWidth,
   contentGap,
@@ -97,7 +98,8 @@ export default function NewsletterSection({
                 onSubmit={handleSubmit}
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto"
+                className="flex flex-col sm:flex-row gap-4 mx-auto"
+                style={{ maxWidth: formMaxWidth || '32rem' }}
               >
                 <input
                   type="email"

@@ -24,12 +24,12 @@ const cards = [
   },
 ];
 
-export default function SplitHeroSection({ items }) {
+export default function SplitHeroSection({ items, sectionHeight, cardMinHeight, ctaAlwaysVisible = false }) {
   const currentCards = items && items.length > 0 ? items : cards;
   return (
-    <section className="w-full flex flex-col md:flex-row" style={{ height: 'clamp(520px, 85vh, 900px)' }}>
+    <section className="w-full flex flex-col md:flex-row" style={{ height: sectionHeight || 'clamp(520px, 85vh, 900px)' }}>
       {currentCards.map((card, i) => (
-        <div key={i} className="relative flex-1 overflow-hidden group min-h-[50%] md:min-h-0">
+        <div key={i} className="relative flex-1 overflow-hidden group min-h-[50%] md:min-h-0" style={{ minHeight: cardMinHeight || undefined }}>
 
           {/* Background image — zooms on hover */}
           <img
@@ -68,10 +68,11 @@ export default function SplitHeroSection({ items }) {
             <Link
               to={card.slug}
               className="flex items-center gap-3 px-8 py-3.5 bg-white text-stone-900 text-[9px] font-bold uppercase tracking-[0.35em] rounded-full
-                         opacity-0 translate-y-5
+                         translate-y-5
                          transition-all duration-700 ease-out
                          group-hover:opacity-100 group-hover:translate-y-0
                          hover:bg-stone-100 hover:shadow-lg"
+              style={{ opacity: ctaAlwaysVisible ? 1 : 0, transform: ctaAlwaysVisible ? 'translateY(0)' : undefined }}
             >
               {card.cta}
               <ArrowRight size={12} strokeWidth={2} />

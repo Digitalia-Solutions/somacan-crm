@@ -109,6 +109,39 @@ export function getResponsiveInlineStyle(responsive) {
   };
 }
 
+function resolveResponsiveValue(normalized, device, key) {
+  if (device === 'mobile') {
+    return normalized.mobile?.[key] || normalized.tablet?.[key] || normalized.desktop?.[key];
+  }
+  if (device === 'tablet') {
+    return normalized.tablet?.[key] || normalized.desktop?.[key];
+  }
+  return normalized.desktop?.[key];
+}
+
+function resolveResponsiveTypography(normalized, device, key) {
+  if (device === 'mobile') {
+    return normalized.mobile?.typography?.[key] || normalized.tablet?.typography?.[key] || normalized.desktop?.typography?.[key];
+  }
+  if (device === 'tablet') {
+    return normalized.tablet?.typography?.[key] || normalized.desktop?.typography?.[key];
+  }
+  return normalized.desktop?.typography?.[key];
+}
+
+export function getPreviewResponsiveInlineStyle(responsive, device = 'desktop') {
+  const normalized = normalizeResponsiveConfig(responsive);
+  return {
+    padding: resolveResponsiveValue(normalized, device, 'padding') || undefined,
+    margin: resolveResponsiveValue(normalized, device, 'margin') || undefined,
+    width: resolveResponsiveValue(normalized, device, 'width') !== 'auto' ? resolveResponsiveValue(normalized, device, 'width') : undefined,
+    textAlign: resolveResponsiveValue(normalized, device, 'alignment') !== 'inherit' ? resolveResponsiveValue(normalized, device, 'alignment') : undefined,
+    fontSize: resolveResponsiveTypography(normalized, device, 'fontSize') || undefined,
+    lineHeight: resolveResponsiveTypography(normalized, device, 'lineHeight') || undefined,
+    letterSpacing: resolveResponsiveTypography(normalized, device, 'letterSpacing') || undefined,
+  };
+}
+
 /**
  * Build a complete responsive stylesheet with CSS custom properties
  * and media-query fallbacks for a given className.

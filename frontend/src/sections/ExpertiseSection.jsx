@@ -38,7 +38,19 @@ const ICONS = {
   shieldcheck: ShieldCheck,
 };
 
-export default function ExpertiseSection({ eyebrow, title, subtitle, intro, items: cmsItems }) {
+export default function ExpertiseSection({
+  eyebrow,
+  title,
+  subtitle,
+  intro,
+  items: cmsItems,
+  itemGap,
+  itemPadding,
+  introMaxWidth,
+  numberColor,
+  titleColor,
+  textColor,
+}) {
   const currentItems = cmsItems && cmsItems.length > 0 ? cmsItems : items;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.15 });
@@ -55,7 +67,7 @@ export default function ExpertiseSection({ eyebrow, title, subtitle, intro, item
               <span className="italic text-gold-400 font-light">{subtitle || 'sans compromis.'}</span>
             </h2>
           </div>
-          <p className="text-sm text-stone-300/85 font-light max-w-xs leading-relaxed">
+          <p className="text-sm text-stone-300/85 font-light leading-relaxed" style={{ maxWidth: introMaxWidth || '20rem' }}>
             {intro || 'Chaque pilier de notre méthode est guidé par une seule obsession : vous offrir le meilleur de la nature.'}
           </p>
         </div>
@@ -71,12 +83,13 @@ export default function ExpertiseSection({ eyebrow, title, subtitle, intro, item
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 1.2, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative p-10 md:p-12 bg-stone-900 flex gap-8 hover:bg-stone-800/60 transition-colors duration-500 overflow-hidden"
+                className="group relative bg-stone-900 flex hover:bg-stone-800/60 transition-colors duration-500 overflow-hidden"
+                style={{ gap: itemGap || '2rem', padding: itemPadding || '2.5rem' }}
               >
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gold-400/5 blur-[40px] rounded-full translate-x-6 -translate-y-6 group-hover:bg-gold-400/10 transition-colors duration-700" />
 
                 <div className="shrink-0">
-                  <span className="font-display text-5xl text-stone-800 group-hover:text-gold-500/30 transition-colors duration-700 leading-none select-none">
+                  <span className="font-display text-5xl group-hover:text-gold-500/30 transition-colors duration-700 leading-none select-none" style={{ color: numberColor || '#292524' }}>
                     {item.num || `0${i+1}`}
                   </span>
                 </div>
@@ -84,11 +97,11 @@ export default function ExpertiseSection({ eyebrow, title, subtitle, intro, item
                 <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-4">
                     <IconComp className="text-gold-500 shrink-0" size={18} strokeWidth={1.5} />
-                    <h3 className="font-display text-xl text-white group-hover:text-gold-100 transition-colors duration-500">
+                    <h3 className="font-display text-xl group-hover:text-gold-100 transition-colors duration-500" style={{ color: titleColor || '#ffffff' }}>
                       {item.title}
                     </h3>
                   </div>
-                  <p className="text-stone-400 text-[14px] leading-relaxed font-light group-hover:text-stone-300 transition-colors duration-500">
+                  <p className="text-[14px] leading-relaxed font-light group-hover:text-stone-300 transition-colors duration-500" style={{ color: textColor || '#a8a29e' }}>
                     {item.desc || item.description}
                   </p>
                 </div>

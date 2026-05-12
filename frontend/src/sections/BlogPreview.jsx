@@ -5,8 +5,12 @@ import { ArrowRight as ArrowRightIcon } from 'lucide-react';
 import { buildImageStyle, buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
 
 export default function BlogPreview({
+  eyebrow,
   title,
   subtitle,
+  ctaText,
+  ctaLink,
+  emptyMessage,
   maxItems,
   gridGap,
   sectionMinHeight,
@@ -51,15 +55,15 @@ export default function BlogPreview({
           <div className="max-w-xl">
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400 mb-8 flex items-center gap-4">
               <span className="w-8 h-px bg-stone-200" />
-              Journal & Lifestyle
+              {eyebrow || 'Journal & Lifestyle'}
             </p>
             <h2 className="font-display text-4xl md:text-6xl lg:text-8xl text-somacan-brand leading-tight" style={titleStyle}>
               {title || "Pensées &"} <br />
               <span className="italic text-stone-400 font-light" style={subtitleStyle}>{subtitle || "inspirations."}</span>
             </h2>
           </div>
-          <Link to="/blog" className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900 border-b border-stone-200 pb-2 hover:border-stone-900 transition-all flex items-center gap-3">
-            Explorer le journal <ArrowRightIcon size={14} strokeWidth={1} />
+          <Link to={ctaLink || '/blog'} className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900 border-b border-stone-200 pb-2 hover:border-stone-900 transition-all flex items-center gap-3">
+            {ctaText || 'Explorer le journal'} <ArrowRightIcon size={14} strokeWidth={1} />
           </Link>
         </header>
 
@@ -69,6 +73,8 @@ export default function BlogPreview({
         >
           {loading ? (
              <div className="col-span-3 py-20 text-center text-stone-300">Chargement...</div>
+          ) : articles.length === 0 ? (
+            <div className="col-span-3 py-20 text-center text-stone-400">{emptyMessage || 'Aucun article disponible pour le moment.'}</div>
           ) : articles.map((article, i) => (
             <motion.article 
               key={article.slug}

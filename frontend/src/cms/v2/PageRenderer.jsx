@@ -16,7 +16,7 @@ import SectionRenderer from '../../components/cms/SectionRenderer';
 import { buildPageConfig, getTemplateLayoutRules } from './TemplateEngine';
 import { normalizeResponsiveConfig } from './ResponsiveEngine';
 
-export default function PageRenderer({ page = {}, previewMode = false, onSectionClick }) {
+export default function PageRenderer({ page = {}, previewMode = false, previewDevice = 'desktop', onSectionClick }) {
   const config = useMemo(() => buildPageConfig(page), [page]);
   const sections = useMemo(() => {
     const raw = Array.isArray(page.sections) ? page.sections : [];
@@ -69,7 +69,7 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
           ...(isInactive ? { opacity: 0.4, pointerEvents: 'none' } : {}),
         }}
       >
-        <SectionRenderer section={section} />
+        <SectionRenderer section={section} previewDevice={previewMode ? previewDevice : undefined} />
       </div>
     );
 
@@ -84,7 +84,7 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
           data-section-type={section.type}
           style={{ marginBottom: sectionSpacing }}
         >
-          <SectionRenderer section={section} />
+          <SectionRenderer section={section} previewDevice={previewMode ? previewDevice : undefined} />
         </button>
       );
     }
@@ -97,6 +97,7 @@ export default function PageRenderer({ page = {}, previewMode = false, onSection
       className={`cms-page ${templateResponsiveClass}`}
       data-template={page.template || 'custom'}
       data-preview={previewMode}
+      data-preview-device={previewMode ? previewDevice : undefined}
       style={pageStyle}
     >
       {/* Template layout wrapper */}

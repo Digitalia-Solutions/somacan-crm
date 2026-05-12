@@ -9,17 +9,72 @@ import { getTemplateDefinition, isSectionAllowedForTemplate } from '../../shared
 
 const router = express.Router();
 
+function isNumericKeyObject(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const keys = Object.keys(value);
+  return keys.length > 0 && keys.every((key) => /^\d+$/.test(key));
+}
+
+function decodeNumericKeyObject(value) {
+  return Object.keys(value)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((key) => value[key])
+    .join('');
+}
+
+function parseJsonLike(value, fallback) {
+  let current = value;
+
+  for (let i = 0; i < 3; i += 1) {
+    if (current == null || current === '') return fallback;
+
+    if (typeof current === 'string') {
+      try {
+        current = JSON.parse(current);
+        continue;
+      } catch {
+        return current;
+      }
+    }
+
+    if (isNumericKeyObject(current)) {
+      current = decodeNumericKeyObject(current);
+      continue;
+    }
+
+    return current;
+  }
+
+  return current ?? fallback;
+}
+
 function normalizeSectionPayload(payload = {}, existingSection = null) {
   const type = payload.type || existingSection?.type;
   const sectionDefinition = type ? getSectionDefinition(type) : null;
-  const widgetTree = payload.widgetTree ?? existingSection?.widgetTree ?? sectionDefinition?.defaultWidgetTree ?? null;
-  const responsive = createResponsiveValue(payload.responsive ?? existingSection?.responsive ?? {});
+  const content = parseJsonLike(payload.content ?? existingSection?.content ?? {}, {});
+  const settings = parseJsonLike(payload.settings ?? existingSection?.settings ?? {}, {});
+  const animation = parseJsonLike(payload.animation ?? existingSection?.animation ?? {}, {});
+  const responsiveSource = parseJsonLike(payload.responsive ?? existingSection?.responsive ?? {}, {});
+  const seo = parseJsonLike(payload.seo ?? existingSection?.seo ?? {}, {});
+  const widgetTree = parseJsonLike(
+    payload.widgetTree ?? existingSection?.widgetTree ?? sectionDefinition?.defaultWidgetTree ?? null,
+    isWidgetSectionType(type) ? [] : null,
+  );
+  const globalStyleOverrides = parseJsonLike(
+    payload.globalStyleOverrides ?? existingSection?.globalStyleOverrides ?? {},
+    {},
+  );
+  const responsive = createResponsiveValue(responsiveSource);
 
   return {
     ...payload,
+    content,
+    settings,
+    animation,
+    seo,
     responsive,
     widgetTree: isWidgetSectionType(type) ? (Array.isArray(widgetTree) ? widgetTree : []) : widgetTree,
-    globalStyleOverrides: payload.globalStyleOverrides ?? existingSection?.globalStyleOverrides ?? {},
+    globalStyleOverrides,
     templateLock: payload.templateLock ?? existingSection?.templateLock ?? sectionDefinition?.type ?? null,
   };
 }

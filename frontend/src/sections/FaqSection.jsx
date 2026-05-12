@@ -34,18 +34,18 @@ const faqs = [
 
 function FaqItem({ item, isOpen, onToggle, questionStyle, answerStyle }) {
   return (
-    <div className="rounded-[2rem] border border-stone-200/80 bg-white/75 backdrop-blur-sm shadow-[0_18px_50px_rgba(28,25,23,0.05)]">
+    <div className="rounded-[1.5rem] border border-stone-200/80 bg-white/75 backdrop-blur-sm shadow-[0_18px_50px_rgba(28,25,23,0.05)] sm:rounded-[2rem]">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-start justify-between gap-6 px-8 py-7 text-left"
+        className="flex w-full items-start justify-between gap-4 px-4 py-5 text-left sm:gap-6 sm:px-8 sm:py-7"
       >
-        <span className="pr-4 font-display text-2xl leading-tight text-somacan-brand md:text-3xl" style={questionStyle}>
+        <span className="pr-2 font-display text-lg leading-snug text-somacan-brand sm:pr-4 sm:text-2xl md:text-3xl" style={questionStyle}>
           {item.question}
         </span>
-        <span className="mt-1 rounded-full border border-stone-200 p-2 text-stone-500">
+        <span className="mt-0.5 shrink-0 rounded-full border border-stone-200 p-1.5 text-stone-500 sm:mt-1 sm:p-2">
           <Plus
-            size={16}
+            size={14}
             className={`transition-transform duration-300 ${isOpen ? 'rotate-45' : 'rotate-0'}`}
           />
         </span>
@@ -60,9 +60,9 @@ function FaqItem({ item, isOpen, onToggle, questionStyle, answerStyle }) {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-8 pb-8 pt-1">
-              <div className="mb-5 h-px w-full bg-stone-100" />
-              <p className="max-w-3xl text-[15px] font-light leading-8 text-stone-600" style={answerStyle}>
+            <div className="px-4 pb-5 pt-1 sm:px-8 sm:pb-8">
+              <div className="mb-4 h-px w-full bg-stone-100 sm:mb-5" />
+              <p className="max-w-3xl text-sm font-light leading-7 text-stone-600 sm:text-[15px] sm:leading-8" style={answerStyle}>
                 {item.answer}
               </p>
             </div>
@@ -79,10 +79,11 @@ export default function FaqSection({
   description,
   ctaText,
   ctaLink,
+  itemsGap,
+  emptyMessage,
   items,
   allowMultipleOpen = false,
   defaultOpenIndex = 0,
-  itemsGap,
   sectionMinHeight,
   contentMaxWidth,
   contentGap,
@@ -110,12 +111,12 @@ export default function FaqSection({
   return (
     <section className="overflow-hidden bg-[linear-gradient(180deg,#fcfaf7_0%,#f3efe8_100%)] py-24" style={{ minHeight: sectionMinHeight || undefined }}>
       <div className="section-padding w-full" style={layoutStyle}>
-        <div className="mb-14 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+        <div className="mb-10 grid gap-8 sm:mb-14 sm:gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400">
               {eyebrow || 'FAQ'}
             </p>
-            <h2 className="font-display text-5xl leading-[0.95] text-somacan-brand md:text-7xl" style={headlineStyle}>
+            <h2 className="font-display text-3xl leading-[0.95] text-somacan-brand sm:text-5xl md:text-7xl" style={headlineStyle}>
               {headline ? headline.split(' ')[0] : 'Questions'}
               <br />
               <span className="font-light italic text-stone-400">
@@ -124,12 +125,12 @@ export default function FaqSection({
             </h2>
           </div>
           <div>
-            <p className="max-w-xl text-[16px] font-light leading-8 text-stone-600" style={descriptionStyle}>
+            <p className="max-w-xl text-[15px] font-light leading-7 text-stone-600 sm:text-[16px] sm:leading-8" style={descriptionStyle}>
               {description || 'Les réponses essentielles pour comprendre la logique Somacan, commencer un rituel cohérent et mieux naviguer dans la collection.'}
             </p>
             <Link
               to={ctaLink || '/about'}
-              className="mt-8 inline-flex items-center gap-3 border-b border-stone-300 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900 transition-colors hover:border-stone-900"
+              className="mt-6 inline-flex items-center gap-3 border-b border-stone-300 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900 transition-colors hover:border-stone-900 sm:mt-8"
             >
               {ctaText || 'Lire Notre Histoire'}
             </Link>
@@ -137,6 +138,12 @@ export default function FaqSection({
         </div>
 
         <div className="grid" style={{ gap: itemsGap || '1.25rem' }}>
+          {currentFaqs.length === 0 && (
+            <div className="rounded-[1.5rem] border border-dashed border-stone-200 bg-white/70 px-6 py-10 text-center text-sm font-medium text-stone-400">
+              {emptyMessage || 'Aucune question disponible pour le moment.'}
+            </div>
+          )}
+
           {currentFaqs.map((item, index) => (
             <FaqItem
               key={item.question || index}

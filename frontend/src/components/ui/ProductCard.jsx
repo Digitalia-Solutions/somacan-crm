@@ -243,7 +243,7 @@ export default function ProductCard({
       tabIndex={0}
     >
       {/* ── IMAGE & BADGES SECTION ── */}
-      <div className={`relative aspect-[4/5] overflow-hidden flex items-center justify-center ${isShowcaseVariant ? 'rounded-t-[2rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.95),rgba(245,240,232,1)_70%)] p-8' : 'rounded-t-3xl bg-gray-50 p-6'}`}>
+      <div className={`relative aspect-[3/4] xs:aspect-[4/5] overflow-hidden flex items-center justify-center ${isShowcaseVariant ? 'rounded-t-[2rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.95),rgba(245,240,232,1)_70%)] p-4 xs:p-8' : 'rounded-t-3xl bg-gray-50 p-4 xs:p-6'}`}>
         {/* Main Image */}
         <Link to={getProductUrl(product)} className="absolute inset-0 flex items-center justify-center z-10 p-8">
           <AnimatePresence mode="wait">
@@ -311,44 +311,43 @@ export default function ProductCard({
       </div>
 
       {/* ── PRODUCT DETAILS SECTION ── */}
-      <div className={`flex flex-col flex-grow ${isShowcaseVariant ? 'p-6' : 'p-5'}`}>
-        <div className="flex items-center justify-between mb-2">
-          <span className={`${isShowcaseVariant ? 'text-[9px] font-bold uppercase tracking-[0.35em] text-stone-400' : 'text-xs font-semibold uppercase tracking-wider text-gray-400'}`}>
+      <div className={`flex flex-col flex-grow ${isShowcaseVariant ? 'p-4 xs:p-6' : 'p-3 xs:p-5'}`}>
+        <div className="flex items-center justify-between mb-1 xs:mb-2">
+          <span className={`${isShowcaseVariant ? 'text-[7px] xs:text-[9px] font-bold uppercase tracking-[0.25em] xs:tracking-[0.35em] text-stone-400' : 'text-[10px] xs:text-xs font-semibold uppercase tracking-wider text-gray-400'}`}>
             {product.category}
           </span>
           {/* Rating */}
           {(product.rating || product.reviews) && (
-            <div className="flex items-center gap-1">
-              <Star size={12} fill="#fbbf24" stroke="#fbbf24" />
-              <span className="text-xs font-semibold text-gray-600">{product.rating}</span>
-              {product.reviews && <span className="text-xs text-gray-400">({product.reviews})</span>}
+            <div className="flex items-center gap-0.5 xs:gap-1">
+              <Star size={10} className="xs:w-3 xs:h-3" fill="#fbbf24" stroke="#fbbf24" />
+              <span className="text-[10px] xs:text-xs font-semibold text-gray-600">{product.rating}</span>
             </div>
           )}
         </div>
 
         <Link to={getProductUrl(product)} className={`block mb-1 transition-colors ${isShowcaseVariant ? 'group-hover:text-somacan-brand' : 'group-hover:text-blue-600'}`}>
-          <h3 className={`${isShowcaseVariant ? 'font-display text-2xl text-somacan-brand leading-[1.05]' : 'font-semibold text-gray-900 text-lg leading-tight'} line-clamp-2`}>
+          <h3 className={`${isShowcaseVariant ? 'font-display text-lg xs:text-2xl text-somacan-brand leading-[1.05]' : 'font-semibold text-gray-900 text-sm xs:text-lg leading-tight'} line-clamp-2`}>
             {product.name}
           </h3>
         </Link>
 
-        <div className="mt-auto pt-4 flex flex-col gap-4">
+        <div className="mt-auto pt-2 xs:pt-4 flex flex-col gap-2 xs:gap-4">
           
           {/* Color Options & Stock */}
           <div className="flex items-center justify-between">
             {product.colors && product.colors.length > 0 ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 xs:gap-2">
                 {product.colors.map((color, idx) => (
                   <button
                     key={idx}
                     aria-label={`Select color ${color.name}`}
                     onClick={(e) => { e.preventDefault(); setActiveColorIndex(idx); }}
-                    className={`w-5 h-5 rounded-full border-[1.5px] transition-all flex items-center justify-center ${
+                    className={`w-4 h-4 xs:w-5 xs:h-5 rounded-full border-[1.5px] transition-all flex items-center justify-center ${
                       activeColorIndex === idx ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-110'
                     }`}
                   >
                     <span 
-                      className="w-3.5 h-3.5 rounded-full shadow-inner" 
+                      className="w-2.5 h-2.5 xs:w-3.5 xs:h-3.5 rounded-full shadow-inner" 
                       style={{ backgroundColor: color.value }}
                     />
                   </button>
@@ -359,8 +358,8 @@ export default function ProductCard({
             )}
             
             {product.stock !== undefined && !isShowcaseVariant && (
-              <span className={`text-xs font-medium ${product.stock <= 5 ? 'text-red-500' : 'text-emerald-500'}`}>
-                {product.stock === 0 ? 'Out of stock' : product.stock <= 5 ? `Only ${product.stock} left` : 'In stock'}
+              <span className={`text-[9px] xs:text-xs font-medium ${product.stock <= 5 ? 'text-red-500' : 'text-emerald-500'}`}>
+                {product.stock === 0 ? 'Out of stock' : product.stock <= 5 ? `${product.stock} left` : 'In stock'}
               </span>
             )}
           </div>
@@ -368,13 +367,13 @@ export default function ProductCard({
           {/* Price & Add to Cart */}
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <div className="flex items-baseline gap-2">
-                <span className={`${isShowcaseVariant ? 'font-display text-3xl text-somacan-brand' : 'text-xl font-bold text-gray-900'}`}>
+              <div className="flex items-baseline gap-1 xs:gap-2">
+                <span className={`${isShowcaseVariant ? 'font-display text-lg xs:text-3xl text-somacan-brand' : 'text-base xs:text-xl font-bold text-gray-900'}`}>
                   {isShowcaseVariant ? `${price.toFixed(0)} MAD` : `${currency}${price.toFixed(2)}`}
                 </span>
-                {oldPrice !== null && oldPrice > 0 && (
-                  <span className="text-sm font-medium text-gray-400 line-through">
-                    {isShowcaseVariant ? `${oldPrice.toFixed(0)} MAD` : `${currency}${oldPrice.toFixed(2)}`}
+                {oldPrice !== null && oldPrice > 0 && !isShowcaseVariant && (
+                  <span className="text-[10px] xs:text-sm font-medium text-gray-400 line-through">
+                    {currency}{oldPrice.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -392,22 +391,25 @@ export default function ProductCard({
                     : isShowcaseVariant
                       ? 'bg-[#043920] text-white hover:bg-[#032b18] hover:shadow-lg hover:-translate-y-0.5 active:scale-95'
                       : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 active:scale-95'
-              } ${isShowcaseVariant ? 'w-12 h-12 rounded-full' : 'w-11 h-11 rounded-2xl'}`}
+              } ${isShowcaseVariant ? 'w-9 h-9 xs:w-12 xs:h-12 rounded-full' : 'w-8 h-8 xs:w-11 xs:h-11 rounded-xl xs:rounded-2xl'}`}
             >
               <AnimatePresence mode="wait">
                 {cartState === 'idle' && (
                   <motion.div key="idle" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ duration: 0.15 }}>
-                    <ShoppingCart size={18} />
+                    <ShoppingCart size={14} className="xs:hidden" />
+                    <ShoppingCart size={18} className="hidden xs:block" />
                   </motion.div>
                 )}
                 {cartState === 'loading' && (
                   <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="animate-spin">
-                    <Loader2 size={18} />
+                    <Loader2 size={14} className="xs:hidden" />
+                    <Loader2 size={18} className="hidden xs:block" />
                   </motion.div>
                 )}
                 {cartState === 'added' && (
                   <motion.div key="added" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ type: "spring", bounce: 0.5 }}>
-                    <Check size={20} strokeWidth={3} />
+                    <Check size={16} strokeWidth={3} className="xs:hidden" />
+                    <Check size={20} strokeWidth={3} className="hidden xs:block" />
                   </motion.div>
                 )}
               </AnimatePresence>

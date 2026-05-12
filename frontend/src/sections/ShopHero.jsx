@@ -21,6 +21,8 @@ export default function ShopHero({
   titleItalic = "Holistique.",
   description = "Explorez une collection de soins botaniques d'exception, où chaque flacon renferme l'âme des rituels marocains et la pureté du CBD.",
   heroImage = "",
+  minHeight,
+  showDescriptionOnMobile = false,
 }) {
   const containerRef = useRef(null);
 
@@ -31,7 +33,7 @@ export default function ShopHero({
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center overflow-hidden">
+    <div ref={containerRef} className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-center overflow-hidden" style={{ minHeight: minHeight || undefined }}>
       {/* Background image with overlay gradient */}
       <div className="absolute inset-0 z-0">
         {heroImage ? (
@@ -58,7 +60,7 @@ export default function ShopHero({
             {title}<br />
             <span className="italic font-light text-stone-400">{titleItalic}</span>
           </h1>
-          <p className="shop-header-item text-sm text-stone-600 font-light max-w-md leading-relaxed hidden sm:block">
+          <p className={`shop-header-item text-sm text-stone-600 font-light max-w-md leading-relaxed ${showDescriptionOnMobile ? 'block' : 'hidden sm:block'}`}>
             {description}
           </p>
         </div>

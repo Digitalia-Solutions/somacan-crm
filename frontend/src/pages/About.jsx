@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, FlaskConical, Leaf, Sparkles, SunMedium } from 'lucide-react';
+import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
 
-const aboutHero = new URL('../public/asset/ChatGPT Image 29 avr. 2026, 15_06_48 (3).png', import.meta.url).href;
-const aboutDetail = new URL('../public/asset/Soins de bien-être élégants et naturels.png', import.meta.url).href;
-const aboutPortrait = new URL('../public/asset/ChatGPT Image 14 avr. 2026, 14_25_00.png', import.meta.url).href;
+const aboutHero = resolveCmsAssetUrl('/asset/ChatGPT Image 29 avr. 2026, 15_06_48 (3).png');
+const aboutDetail = resolveCmsAssetUrl('/asset/Soins de bien-être élégants et naturels.png');
+const aboutPortrait = resolveCmsAssetUrl('/asset/ChatGPT Image 14 avr. 2026, 14_25_00.png');
 
 const principles = [
   {

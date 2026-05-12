@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone, Clock3, ArrowRight, Send, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { submitContactForm } from '../lib/api';
+import { resolveCmsAssetUrl } from '../lib/cmsAssetUrl';
 
-const contactHero = new URL('../public/asset/Soins de bien-être élégants et naturels.png', import.meta.url).href;
+const contactHero = resolveCmsAssetUrl('/asset/Soins de bien-être élégants et naturels.png');
 
 const contactCards = [
   {

@@ -31,9 +31,10 @@ import ProductRelated from '../../sections/ProductRelated';
 import NewsletterSection from '../../sections/NewsletterSection';
 import FeaturesBar from '../../sections/FeaturesBar';
 import StorySection from '../../sections/StorySection';
+import ThreeProductHero from '../../sections/ThreeProductHero';
 import WidgetSectionRenderer from './WidgetSectionRenderer';
 import { isWidgetSectionType } from '../../../../shared/cms/sections.js';
-import { getVisibilityClasses, getResponsiveInlineStyle, normalizeResponsiveConfig } from '../../cms/v2/ResponsiveEngine';
+import { getVisibilityClasses, getPreviewResponsiveInlineStyle, getResponsiveInlineStyle, isDeviceVisible, normalizeResponsiveConfig } from '../../cms/v2/ResponsiveEngine';
 
 const SECTION_COMPONENTS = {
   Hero,
@@ -67,6 +68,7 @@ const SECTION_COMPONENTS = {
   NewsletterSection,
   FeaturesBar,
   StorySection,
+  ThreeProductHero,
 };
 
 /**
@@ -74,12 +76,12 @@ const SECTION_COMPONENTS = {
  * Supports both old SiteContent format (contentType, content.type, cssClasses, animation string)
  * and new PageSection format (section.type, section.content, section.settings, section.animation object, section.responsive)
  */
-export default function SectionRenderer({ section }) {
+export default function SectionRenderer({ section, previewDevice }) {
   // Detect format: old format has 'contentType' field, new format has 'type' directly
   const isNewFormat = section.type && !section.contentType;
 
   if (isNewFormat) {
-    return renderNewFormat(section);
+    return renderNewFormat(section, previewDevice);
   } else {
     return renderOldFormat(section);
   }
@@ -94,7 +96,7 @@ export default function SectionRenderer({ section }) {
  * - section.responsive: JSON object ({ desktop, tablet, mobile } each with padding, visible)
  * - section.isActive: boolean
  */
-function renderNewFormat(section) {
+function renderNewFormat(section, previewDevice) {
   const { type, content = {}, settings = {}, responsive = {}, isActive = true } = section;
 
   // If section is not active, don't render
@@ -113,6 +115,9 @@ function renderNewFormat(section) {
     return null;
   }
 
+  const normalizedResponsive = normalizeResponsiveConfig(responsive);
+  const previewHidden = previewDevice ? !isDeviceVisible(normalizedResponsive, previewDevice) : false;
+
   // Build wrapper style from settings
   const wrapperStyle = {
     ...(settings.backgroundColor && { backgroundColor: settings.backgroundColor }),
@@ -120,16 +125,19 @@ function renderNewFormat(section) {
   const contentWidth = settings.contentWidth || '';
   const isFullWidth = settings.fullWidth === true;
 
-  // Handle responsive visibility: if mobile is hidden, add tailwind classes
-  const normalizedResponsive = normalizeResponsiveConfig(responsive);
-  const classNames = ['cms-section', getVisibilityClasses(normalizedResponsive)].filter(Boolean).join(' ');
+  const classNames = [
+    'cms-section',
+    previewDevice ? '' : getVisibilityClasses(normalizedResponsive),
+  ].filter(Boolean).join(' ');
 
-  // Apply responsive padding if available
-  const responsiveStyle = getResponsiveInlineStyle(normalizedResponsive);
+  const responsiveStyle = previewDevice
+    ? getPreviewResponsiveInlineStyle(normalizedResponsive, previewDevice)
+    : getResponsiveInlineStyle(normalizedResponsive);
 
   const finalStyle = {
     ...wrapperStyle,
     ...responsiveStyle,
+    ...(previewHidden ? { display: 'none' } : {}),
   };
 
   return (

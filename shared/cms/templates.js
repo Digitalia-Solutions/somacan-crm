@@ -10,6 +10,7 @@ const V2_CORE_SECTIONS = [
 ];
 
 const LEGACY_MARKETING_SECTIONS = [
+  'ThreeProductHero',
   'WheelHero',
   'Hero',
   'FeaturesBar',

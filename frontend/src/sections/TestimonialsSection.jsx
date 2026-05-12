@@ -51,8 +51,10 @@ function Stars() {
 }
 
 export default function TestimonialsSection({
+  eyebrow,
   title,
   subtitle,
+  footerNote,
   items,
   autoplay = true,
   autoplayDelay = 4800,
@@ -105,7 +107,7 @@ export default function TestimonialsSection({
       <div className="section-padding w-full" style={layoutStyle}>
         <div className="testimonials-reveal mb-14 text-center">
           <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.4em] text-stone-400">
-            Echos de Beaute
+            {eyebrow || 'Echos de Beaute'}
           </p>
           <h2 className="font-display text-5xl leading-[0.95] text-somacan-brand md:text-7xl" style={titleStyle}>
             {title || "Ce qu'elles disent"}
@@ -168,7 +170,7 @@ export default function TestimonialsSection({
         </div>
 
         <div className="testimonials-reveal mt-10 text-center">
-          <p className="text-[11px] text-stone-400">4.9/5 · plus de 800 avis verifies</p>
+          <p className="text-[11px] text-stone-400">{footerNote || '4.9/5 · plus de 800 avis verifies'}</p>
         </div>
       </div>
     </section>

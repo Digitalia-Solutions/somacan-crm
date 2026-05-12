@@ -80,6 +80,7 @@ export default function PageBuilder2() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewDevice, setPreviewDevice] = useState('desktop');
   const [previewZoom, setPreviewZoom] = useState(100);
+  const [mobilePanel, setMobilePanel] = useState(null);
 
   // --- SEO Editor ---
   const [seoOpen, setSeoOpen] = useState(false);
@@ -277,6 +278,24 @@ export default function PageBuilder2() {
     template: selectedPage?.template || 'custom',
   }), [selectedPage, sections]);
 
+  const previewViewportLabel = previewDevice === 'mobile' ? '375px' : previewDevice === 'tablet' ? '768px' : '1440px';
+
+  const openMobilePanel = useCallback((panel) => {
+    setPreviewOpen(false);
+    setMobilePanel(panel);
+  }, []);
+
+  const togglePreview = useCallback(() => {
+    setMobilePanel(null);
+    setPreviewOpen((current) => {
+      const next = !current;
+      if (next && typeof window !== 'undefined' && window.matchMedia('(max-width: 1279px)').matches && previewDevice === 'desktop') {
+        setPreviewDevice('mobile');
+      }
+      return next;
+    });
+  }, [previewDevice]);
+
   const handleDraftChange = useCallback((patch) => {
     if (!editingSection?.id) return;
     pageState.updateDraftSection(editingSection.id, patch);
@@ -288,9 +307,9 @@ export default function PageBuilder2() {
   }, [editingSection?.id, pageState]);
 
   return (
-    <div className={`grid gap-8 min-h-0 ${previewOpen ? 'lg:grid-cols-[240px_minmax(0,1fr)_minmax(0,1fr)]' : 'lg:grid-cols-[280px_minmax(0,1fr)]'} transition-all duration-300`}>
+    <div className={`grid grid-cols-1 gap-6 min-h-0 ${previewOpen ? 'xl:grid-cols-[240px_minmax(0,1fr)_minmax(0,1fr)]' : 'xl:grid-cols-[280px_minmax(0,1fr)]'} transition-all duration-300`}>
       {/* Pages Sidebar */}
-      <div className="flex flex-col gap-6">
+      <div className="hidden xl:flex flex-col gap-6">
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400">Pages</h3>
@@ -313,6 +332,7 @@ export default function PageBuilder2() {
                         if (!window.confirm('Vous avez des modifications non sauvées. Changer de page ?')) return;
                         setEditingSection(null);
                       }
+                      setMobilePanel(null);
                       setSelectedPage(page);
                     }}
                     className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all ${
@@ -465,20 +485,20 @@ export default function PageBuilder2() {
           <>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h1 className="font-display text-4xl text-somacan-brand">{selectedPage.title || selectedPage.slug}</h1>
+                <h1 className="font-display text-2xl sm:text-3xl xl:text-4xl text-somacan-brand">{selectedPage.title || selectedPage.slug}</h1>
                 <div className="flex items-center gap-2 mt-1">
                   <Badge variant="outline" className="text-stone-400 border-stone-200 font-mono">/{selectedPage.slug}</Badge>
                   <span className="text-xs text-stone-400 font-bold tracking-tight">• {sections.length} sections</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="hidden xl:flex items-center gap-2">
                 <Button variant="secondary" size="md" onClick={() => loadSections(selectedPage.slug)} icon={RefreshCw}>
                   Rafraîchir
                 </Button>
                 <Button
                   variant={previewOpen ? 'primary' : 'secondary'}
                   size="md"
-                  onClick={() => setPreviewOpen(p => !p)}
+                  onClick={togglePreview}
                   icon={previewOpen ? EyeOff : Eye}
                 >
                   {previewOpen ? 'Masquer aperçu' : 'Aperçu live'}
@@ -486,6 +506,61 @@ export default function PageBuilder2() {
                 <Button variant="primary" size="md" onClick={() => setAddingSection(true)} icon={Plus}>
                   Ajouter une section
                 </Button>
+              </div>
+            </div>
+
+            <div className="xl:hidden rounded-[1.75rem] border border-stone-200 bg-white p-2 shadow-sm">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                <button
+                  type="button"
+                  onClick={() => openMobilePanel('pages')}
+                  className="shrink-0 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-500"
+                >
+                  <FileText size={13} />
+                  Pages
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openMobilePanel('status')}
+                  className="shrink-0 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-500"
+                >
+                  <Lock size={13} />
+                  Statut
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openMobilePanel('seo')}
+                  className="shrink-0 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-500"
+                >
+                  <Globe size={13} />
+                  SEO
+                </button>
+                <button
+                  type="button"
+                  onClick={togglePreview}
+                  className={`shrink-0 inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] ${
+                    previewOpen ? 'bg-stone-900 text-white' : 'border border-stone-200 bg-stone-50 text-stone-500'
+                  }`}
+                >
+                  {previewOpen ? <EyeOff size={13} /> : <Eye size={13} />}
+                  Aperçu
+                </button>
+                <button
+                  type="button"
+                  onClick={() => loadSections(selectedPage.slug)}
+                  className="shrink-0 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-stone-500"
+                >
+                  <RefreshCw size={13} />
+                  Rafraîchir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAddingSection(true)}
+                  className="shrink-0 inline-flex items-center gap-2 rounded-full bg-stone-900 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white"
+                >
+                  <Plus size={13} />
+                  Ajouter
+                </button>
               </div>
             </div>
 
@@ -553,7 +628,7 @@ export default function PageBuilder2() {
 
       {/* Live Preview Panel */}
       {previewOpen && selectedPage && (
-        <div className="flex flex-col gap-4 min-h-0">
+        <div className="hidden xl:flex flex-col gap-4 min-h-0">
           {/* Preview toolbar */}
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div className="flex items-center gap-1 bg-white rounded-xl border border-stone-200 p-1">
@@ -581,7 +656,7 @@ export default function PageBuilder2() {
               ))}
             </div>
             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
-              {previewDevice === 'mobile' ? '375px' : previewDevice === 'tablet' ? '768px' : '1440px'}
+              {previewViewportLabel}
             </span>
           </div>
 
@@ -611,13 +686,101 @@ export default function PageBuilder2() {
                       Aperçu live
                     </span>
                   </div>
-                  <PageRenderer page={previewPage} previewMode />
+                  <PageRenderer page={previewPage} previewMode previewDevice={previewDevice} />
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      <AnimatePresence>
+        {previewOpen && selectedPage && (
+          <motion.div
+            className="fixed inset-0 z-[55] bg-stone-950/70 backdrop-blur-sm xl:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="flex h-full flex-col">
+              <div className="flex items-start justify-between gap-3 border-b border-white/10 bg-stone-950 px-4 py-4 text-white">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-500">Aperçu live</p>
+                  <h3 className="mt-1 truncate text-sm font-bold">{selectedPage.title || selectedPage.slug}</h3>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">/{selectedPage.slug}</p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setPreviewOpen(false)} icon={X} className="text-white hover:bg-white/10">
+                  Fermer
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 bg-stone-900 px-4 py-3 text-white">
+                <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 p-1">
+                  {[
+                    { id: 'desktop', icon: Monitor },
+                    { id: 'tablet', icon: Tablet },
+                    { id: 'mobile', icon: Smartphone },
+                  ].map((d) => (
+                    <button
+                      key={d.id}
+                      onClick={() => setPreviewDevice(d.id)}
+                      className={`rounded-full p-2 transition-all ${previewDevice === d.id ? 'bg-white text-stone-900' : 'text-stone-400'}`}
+                    >
+                      <d.icon size={15} />
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 p-1">
+                  {[50, 75, 100].map((z) => (
+                    <button
+                      key={z}
+                      onClick={() => setPreviewZoom(z)}
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold transition-all ${previewZoom === z ? 'bg-white text-stone-900' : 'text-stone-400'}`}
+                    >
+                      {z}%
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">{previewViewportLabel}</span>
+              </div>
+
+              <div className="flex-1 overflow-auto bg-stone-100 p-4">
+                <div className="mx-auto flex w-full justify-center">
+                  <div style={{
+                    transform: `scale(${previewZoom / 100})`,
+                    transformOrigin: 'top center',
+                    width: previewZoom < 100 ? `${10000 / previewZoom}%` : '100%',
+                  }}>
+                    <div className={`overflow-hidden bg-white shadow-2xl transition-all duration-500 ${
+                      previewDevice === 'mobile'
+                        ? 'w-[min(390px,100%)] rounded-[2.5rem] ring-8 ring-stone-800'
+                        : previewDevice === 'tablet'
+                        ? 'w-[min(768px,100%)] rounded-2xl ring-4 ring-stone-300'
+                        : 'w-full max-w-[1280px]'
+                    }`}>
+                      <div className="flex items-center justify-between gap-3 border-b border-stone-100 bg-stone-50 px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          <div className="h-2.5 w-2.5 rounded-full bg-stone-200" />
+                          <div className="h-2.5 w-2.5 rounded-full bg-stone-200" />
+                          <div className="h-2.5 w-2.5 rounded-full bg-stone-200" />
+                        </div>
+                        <button
+                          onClick={() => window.dispatchEvent(new CustomEvent('cms:refresh-preview'))}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500"
+                        >
+                          <RefreshCw size={12} />
+                          Rafraîchir
+                        </button>
+                      </div>
+                      <PageRenderer page={previewPage} previewMode previewDevice={previewDevice} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Overlay Edit Drawer */}
       <AnimatePresence>
@@ -642,6 +805,190 @@ export default function PageBuilder2() {
           onSelectType={handleAddSectionType}
         />
       )}
+
+      <AnimatePresence>
+        {mobilePanel && selectedPage && (
+          <motion.div
+            className="fixed inset-0 z-[52] bg-stone-950/45 backdrop-blur-sm xl:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="absolute inset-0" onClick={() => setMobilePanel(null)} />
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-hidden rounded-t-[2rem] border border-white/10 bg-white shadow-2xl"
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-stone-100 px-4 py-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+                    {mobilePanel === 'pages' ? 'Pages' : mobilePanel === 'status' ? 'Statut' : 'SEO'}
+                  </p>
+                  <h3 className="mt-1 text-lg font-display text-somacan-brand">
+                    {mobilePanel === 'pages' ? 'Changer de page' : mobilePanel === 'status' ? 'État de la page' : 'Réglages SEO'}
+                  </h3>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setMobilePanel(null)} icon={X} />
+              </div>
+
+              <div className="max-h-[calc(88vh-72px)] overflow-y-auto p-4">
+                {mobilePanel === 'pages' && (
+                  <div className="flex flex-col gap-3">
+                    {pagesLoading ? (
+                      <div className="py-10 flex justify-center"><Loader2 className="animate-spin text-stone-300" /></div>
+                    ) : (
+                      <div className="grid gap-2">
+                        {pages.map((page) => {
+                          const isActive = selectedPage?.id === page.id;
+                          return (
+                            <button
+                              key={page.id}
+                              onClick={() => {
+                                if (editingSection && drawerDirtyRef.current) {
+                                  if (!window.confirm('Vous avez des modifications non sauvées. Changer de page ?')) return;
+                                  setEditingSection(null);
+                                }
+                                setMobilePanel(null);
+                                setPreviewOpen(false);
+                                setSelectedPage(page);
+                              }}
+                              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all ${
+                                isActive
+                                  ? 'border-stone-900 bg-stone-900 text-white'
+                                  : 'border-stone-200 bg-stone-50 text-stone-600'
+                              }`}
+                            >
+                              <FileText size={16} className={isActive ? 'text-white' : 'text-stone-400'} />
+                              <span className="flex-1 truncate text-sm font-bold">{page.title || page.slug}</span>
+                              {page.isPublished && <span className="h-2 w-2 rounded-full bg-emerald-500" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {mobilePanel === 'status' && (
+                  <div className="flex flex-col gap-4">
+                    <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">Publication</p>
+                          <p className="mt-1 text-sm font-bold text-stone-900">
+                            {selectedPage.isPublished ? 'En ligne' : 'Brouillon'}
+                          </p>
+                        </div>
+                        <Badge variant={selectedPage.isPublished ? 'success' : 'outline'} className={selectedPage.isPublished ? '' : 'text-stone-400 border-stone-300'}>
+                          {selectedPage.isPublished ? 'Publié' : 'Privé'}
+                        </Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        className="mt-4 w-full"
+                        onClick={async () => {
+                          try {
+                            const next = !selectedPage.isPublished;
+                            await updateAdminPage(selectedPage.id, { isPublished: next });
+                            setPages((prev) => prev.map((p) => p.id === selectedPage.id ? { ...p, isPublished: next } : p));
+                            setSelectedPage((prev) => ({ ...prev, isPublished: next }));
+                            success(next ? 'Page publiée' : 'Page en brouillon');
+                          } catch (err) {
+                            showError('Erreur fatale.');
+                          }
+                        }}
+                      >
+                        {selectedPage.isPublished ? 'Dépublier' : 'Publier'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {mobilePanel === 'seo' && (
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1.5">Titre SEO</label>
+                      <input
+                        type="text"
+                        value={seoFields.metaTitle}
+                        onChange={(e) => setSeoFields((f) => ({ ...f, metaTitle: e.target.value }))}
+                        placeholder={selectedPage.title}
+                        className="w-full rounded-xl border border-stone-200 px-3 py-2 text-sm font-medium text-stone-900 outline-none focus:border-stone-400"
+                      />
+                      <p className="mt-1 text-[10px] text-stone-400">{seoFields.metaTitle.length}/60</p>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1.5">Méta Description</label>
+                      <textarea
+                        value={seoFields.metaDescription}
+                        onChange={(e) => setSeoFields((f) => ({ ...f, metaDescription: e.target.value }))}
+                        rows={4}
+                        className="w-full resize-none rounded-xl border border-stone-200 px-3 py-2 text-sm font-medium text-stone-900 outline-none focus:border-stone-400"
+                      />
+                      <p className="mt-1 text-[10px] text-stone-400">{seoFields.metaDescription.length}/160</p>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1.5">OG Image URL</label>
+                      <input
+                        type="text"
+                        value={seoFields.ogImage}
+                        onChange={(e) => setSeoFields((f) => ({ ...f, ogImage: e.target.value }))}
+                        placeholder="/asset/..."
+                        className="w-full rounded-xl border border-stone-200 px-3 py-2 text-sm font-medium text-stone-900 outline-none focus:border-stone-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1.5">URL Canonique</label>
+                      <input
+                        type="text"
+                        value={seoFields.canonicalUrl}
+                        onChange={(e) => setSeoFields((f) => ({ ...f, canonicalUrl: e.target.value }))}
+                        placeholder="https://somacan.com/..."
+                        className="w-full rounded-xl border border-stone-200 px-3 py-2 text-sm font-medium text-stone-900 outline-none focus:border-stone-400"
+                      />
+                    </div>
+                    <label className="flex items-center gap-3 cursor-pointer rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={seoFields.noIndex}
+                        onChange={(e) => setSeoFields((f) => ({ ...f, noIndex: e.target.checked }))}
+                        className="h-4 w-4 rounded border-stone-300"
+                      />
+                      <span className="text-xs font-bold text-stone-600">noindex (masquer du moteur de recherche)</span>
+                    </label>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      loading={seoSaving}
+                      onClick={async () => {
+                        setSeoSaving(true);
+                        try {
+                          await updateAdminPage(selectedPage.id, seoFields);
+                          setPages((prev) => prev.map((p) => p.id === selectedPage.id ? { ...p, ...seoFields } : p));
+                          setSelectedPage((prev) => ({ ...prev, ...seoFields }));
+                          success('SEO sauvegardé');
+                        } catch (err) {
+                          showError('Erreur lors de la sauvegarde SEO');
+                        } finally {
+                          setSeoSaving(false);
+                        }
+                      }}
+                      icon={Save}
+                      className="w-full"
+                    >
+                      Sauvegarder SEO
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1244,7 +1591,7 @@ function EditSectionDrawer({ section, pageSections, onDraftChange, onResetDraft,
                         <RefreshCw size={12} />
                       </button>
                     </div>
-                    <PageRenderer page={{ sections: previewSections, template: 'custom' }} previewMode />
+                    <PageRenderer page={{ sections: previewSections, template: 'custom' }} previewMode previewDevice={previewDevice} />
                   </div>
                 </div>
               </div>

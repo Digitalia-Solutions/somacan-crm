@@ -178,12 +178,12 @@ export default function WheelHero({
             ease: "power3.out"
         });
     });
-  }, [index, currentProducts.length]);
+  }, [index, currentProducts.length, transitionDuration]);
 
   return (
     <section 
       ref={containerRef}
-      className="relative h-screen w-full overflow-hidden transition-colors duration-1000"
+      className="relative min-h-screen lg:h-screen w-full overflow-hidden transition-colors duration-1000"
       style={{
         background: activeProduct.bgGradient || activeProduct.accentColor || '#0d1f14',
         minHeight: sectionMinHeight || undefined,
@@ -215,12 +215,12 @@ export default function WheelHero({
       </div>
 
       {/* Full-screen Inner Container Card */}
-      <div className="absolute inset-6 md:inset-10 lg:inset-12 bg-white/[0.03] backdrop-blur-[80px] rounded-[3rem] md:rounded-[4rem] border border-white/10 shadow-2xl overflow-hidden flex flex-col z-10">
+      <div className="absolute inset-3 xs:inset-4 md:inset-10 lg:inset-12 bg-white/[0.03] backdrop-blur-[80px] rounded-[2rem] xs:rounded-[3rem] md:rounded-[4rem] border border-white/10 shadow-2xl overflow-hidden flex flex-col z-10">
         
         {/* ── Top Header Navigation ── */}
         <header className="flex items-center justify-between px-5 py-4 md:px-10 md:py-6 lg:px-16">
           <Link to="/" className="flex items-center group">
-            <img src={logoDark} alt="Somacan" className="h-10 md:h-12 w-auto transition-all duration-700 group-hover:scale-105" />
+            <img src={logoDark} alt="Somacan" className="h-8 xs:h-10 md:h-12 w-auto transition-all duration-700 group-hover:scale-105" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-10">
@@ -236,7 +236,7 @@ export default function WheelHero({
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1 xs:gap-2 md:gap-3">
             {isAuthenticated ? (
               <>
                 <Link to="/account" className="hidden rounded-full p-2 transition-colors hover:bg-white/10 md:flex" aria-label="Mon compte">
@@ -257,17 +257,17 @@ export default function WheelHero({
               </>
             )}
             <Link to="/wishlist" className="rounded-full p-2 transition-colors hover:bg-white/10" aria-label="Wishlist">
-              <Heart className="w-5 h-5 text-white/80" />
+              <Heart className="w-4 h-4 xs:w-5 xs:h-5 text-white/80" />
             </Link>
             <Link to="/cart" className="relative rounded-full p-2 transition-colors hover:bg-white/10" aria-label="Panier">
-              <ShoppingBag className="w-5 h-5 text-white/80" />
+              <ShoppingBag className="w-4 h-4 xs:w-5 xs:h-5 text-white/80" />
               <AnimatePresence>
                 {totalItems > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="absolute -top-2.5 -right-2.5 w-4 h-4 bg-white text-black text-[8px] font-bold rounded-full flex items-center justify-center"
+                    className="absolute top-0 right-0 w-3.5 h-3.5 bg-white text-black text-[7px] font-bold rounded-full flex items-center justify-center"
                   >
                     {totalItems}
                   </motion.span>
@@ -353,7 +353,7 @@ export default function WheelHero({
         >
 
           {/* Left: Product Info */}
-          <div className="col-span-12 lg:col-span-4 z-20 flex flex-col items-start order-2 lg:order-1 pt-3 md:pt-0">
+          <div className="col-span-12 lg:col-span-4 z-20 flex flex-col items-center lg:items-start order-2 lg:order-1 pt-3 md:pt-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeProduct.id}
@@ -361,19 +361,20 @@ export default function WheelHero({
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -40, opacity: 0 }}
                 transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                className="flex flex-col items-center lg:items-start text-center lg:text-left"
               >
-                <Link to="/shop" className="flex items-center gap-3 text-white/40 mb-5 md:mb-10 group hover:text-white transition-colors">
+                <Link to="/shop" className="hidden lg:flex items-center gap-3 text-white/40 mb-5 md:mb-10 group hover:text-white transition-colors">
                   <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white transition-all">
                     <ArrowLeft size={12} />
                   </div>
                   <span className="text-[9px] font-bold uppercase tracking-[0.4em]">Collection Boutique</span>
                 </Link>
 
-                <h1 className="font-display text-white leading-[0.88] mb-4 md:mb-8" style={{ fontSize: 'clamp(2rem, 7vw, 5rem)', ...nameStyle }}>
+                <h1 className="font-display text-white leading-[0.88] mb-4 md:mb-8" style={{ fontSize: 'clamp(1.75rem, 8vw, 5rem)', ...nameStyle }}>
                   {activeProduct.name.split(' ').map((word, i) => (
                     <span 
                       key={i} 
-                      className={`block ${i % 2 === 1 ? 'italic font-light opacity-60 ml-4 md:ml-8' : ''}`}
+                      className={`block ${i % 2 === 1 ? 'italic font-light opacity-60 lg:ml-8' : ''}`}
                       style={{ 
                         color: activeProduct.nameColor || undefined,
                         fontSize: activeProduct.nameSize && activeProduct.nameSize.includes('px') ? activeProduct.nameSize : undefined
@@ -385,14 +386,14 @@ export default function WheelHero({
                 </h1>
                 
                 <div className="flex items-center gap-3 mb-5 md:mb-10">
-                  <span className="px-4 py-2 rounded-full border border-white/10 text-white text-[10px] font-bold uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md">
+                  <span className="px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10 text-white text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] bg-white/5 backdrop-blur-md">
                     {activeProduct.dosage}
                   </span>
-                  <div className="w-8 h-[1px] bg-white/10 hidden sm:block" />
-                  <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest italic hidden sm:block">Formule Botanique</span>
+                  <div className="w-6 md:w-8 h-[1px] bg-white/10 hidden sm:block" />
+                  <span className="text-white/30 text-[9px] md:text-[10px] font-bold uppercase tracking-widest italic hidden sm:block">Formule Botanique</span>
                 </div>
 
-                <p className="text-white/40 text-sm font-light leading-relaxed max-w-[340px] hidden md:block" style={descriptionStyle}>
+                <p className="text-white/40 text-xs md:text-sm font-light leading-relaxed max-w-[340px] hidden md:block" style={descriptionStyle}>
                   {activeProduct.description}
                 </p>
               </motion.div>
@@ -403,7 +404,7 @@ export default function WheelHero({
           <div className="col-span-12 lg:col-span-4 h-full flex items-center justify-center relative perspective-[1200px] z-10 order-1 lg:order-2">
             <div
               ref={wheelRef}
-              className="relative w-full h-[220px] sm:h-[280px] md:h-[500px] flex items-center justify-center"
+              className="relative w-full h-[var(--wheel-height,220px)] flex items-center justify-center"
               style={{ transformStyle: 'preserve-3d' }}
             >
               {currentProducts.map((prod, i) => {
@@ -413,16 +414,16 @@ export default function WheelHero({
                     key={prod.id || i}
                     className="absolute inset-0 flex items-center justify-center pointer-events-none"
                     style={{ 
-                      transform: `rotateY(${rotation}deg) translateZ(${Number(wheelDepth) || 400}px)`,
+                      transform: `rotateY(${rotation}deg) translateZ(var(--wheel-depth,200px))`,
                       backfaceVisibility: 'hidden'
                     }}
                   >
                     <img 
                       src={resolveCmsAssetUrl(prod.image)} 
                       alt={prod.name}
-                      className="drop-shadow-[0_40px_100px_rgba(0,0,0,0.6)]"
+                      className="drop-shadow-[0_20px_60px_rgba(0,0,0,0.6)] md:drop-shadow-[0_40px_100px_rgba(0,0,0,0.6)]"
                       style={{ 
-                        width: `clamp(${imageWidth || '280px'}, ${imageWidthMd || '450px'}, ${imageWidthXl || '580px'})`,
+                        width: `clamp(180px, 45vw, 580px)`,
                         maxWidth: '100%',
                         objectFit: prod.imageFit || undefined,
                         objectPosition: prod.imagePosition || undefined,
@@ -439,18 +440,18 @@ export default function WheelHero({
 
             {/* Slider Navigation Arrows */}
             {showNavigation && (
-            <div className="absolute bottom-4 flex items-center gap-10 z-50">
+            <div className="absolute bottom-2 md:bottom-4 flex items-center gap-8 xs:gap-10 z-50">
                <button 
                   onClick={handlePrev}
-                  className="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center text-white/30 hover:text-white hover:border-white transition-all bg-white/[0.03] backdrop-blur-md hover:scale-110 active:scale-95"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/5 flex items-center justify-center text-white/30 hover:text-white hover:border-white transition-all bg-white/[0.03] backdrop-blur-md hover:scale-110 active:scale-95"
                >
-                  <ArrowLeft size={18} strokeWidth={1} />
+                  <ArrowLeft size={16} md:size={18} strokeWidth={1} />
                </button>
                <button 
                   onClick={handleNext}
-                  className="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center text-white/30 hover:text-white hover:border-white transition-all bg-white/[0.03] backdrop-blur-md hover:scale-110 active:scale-95"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/5 flex items-center justify-center text-white/30 hover:text-white hover:border-white transition-all bg-white/[0.03] backdrop-blur-md hover:scale-110 active:scale-95"
                >
-                  <ArrowRight size={18} strokeWidth={1} />
+                  <ArrowRight size={16} md:size={18} strokeWidth={1} />
                </button>
             </div>
             )}
@@ -500,55 +501,55 @@ export default function WheelHero({
         </div>
 
         {/* ── Fixed Bottom Actions Bar ── */}
-        <div className="h-20 md:h-28 flex items-center justify-between gap-3 px-4 md:px-10 lg:px-24 border-t border-white/5 z-40 bg-white/[0.01]">
+        <div className="h-16 xs:h-20 md:h-28 flex items-center justify-between gap-2 xs:gap-3 px-4 md:px-10 lg:px-24 border-t border-white/5 z-40 bg-white/[0.01]">
           <motion.div
             key={`price-${activeProduct.id}`}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="flex items-baseline gap-3"
+            className="flex items-baseline gap-1.5 md:gap-3"
           >
             <span
               className="font-display text-white"
               style={{
-                fontSize: 'clamp(2rem, 8vw, 5rem)',
+                fontSize: 'clamp(1.5rem, 8vw, 5rem)',
                 color: activeProduct.priceColor || undefined,
               }}
             >
               {activeProduct.price}
             </span>
             <div className="flex flex-col">
-              <span className="text-white/40 text-sm md:text-lg font-bold uppercase tracking-[0.4em]">MAD</span>
-              <span className="text-white/10 text-[7px] uppercase tracking-[0.2em] font-bold hidden md:block">Livraison Incluse</span>
+              <span className="text-white/40 text-[10px] xs:text-sm md:text-lg font-bold uppercase tracking-[0.2em] md:tracking-[0.4em]">MAD</span>
+              <span className="text-white/10 text-[7px] uppercase tracking-[0.2em] font-bold hidden sm:block">Livraison Incluse</span>
             </div>
           </motion.div>
 
-          <div className="flex items-center gap-3 md:gap-6 lg:gap-10">
+          <div className="flex items-center gap-2 xs:gap-3 md:gap-6 lg:gap-10">
             {/* Quantity Selector — hidden on mobile to save space */}
-            <div className="hidden sm:flex items-center gap-6 px-5 py-3 rounded-[1.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl">
+            <div className="hidden sm:flex items-center gap-4 md:gap-6 px-4 md:px-5 py-2 md:py-3 rounded-[1.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl">
               <button
                 onClick={() => quantity > 1 && setQuantity(quantity - 1)}
                 className="text-white/30 hover:text-white transition-colors"
               >
-                <Minus size={16} strokeWidth={1.5} />
+                <Minus size={14} md:size={16} strokeWidth={1.5} />
               </button>
-              <span className="text-white font-display text-xl w-5 text-center">{quantity}</span>
+              <span className="text-white font-display text-lg md:text-xl w-4 md:w-5 text-center">{quantity}</span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
                 className="text-white/30 hover:text-white transition-colors"
               >
-                <Plus size={16} strokeWidth={1.5} />
+                <Plus size={14} md:size={16} strokeWidth={1.5} />
               </button>
             </div>
 
             {/* Main Action Button */}
             <button
               onClick={() => addToCart(activeProduct, quantity)}
-              className="group relative overflow-hidden px-5 md:px-10 lg:px-16 py-3 md:py-5 bg-white text-black font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] rounded-[1.2rem] md:rounded-[1.5rem] hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all duration-500"
+              className="group relative overflow-hidden px-4 xs:px-5 md:px-10 lg:px-16 py-2.5 xs:py-3 md:py-5 bg-white text-black font-bold uppercase tracking-[0.15em] xs:tracking-[0.2em] md:tracking-[0.3em] text-[9px] xs:text-[10px] rounded-[1rem] xs:rounded-[1.2rem] md:rounded-[1.5rem] hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] transition-all duration-500"
             >
               <span className="relative z-10 flex items-center gap-2 md:gap-4">
-                <span className="hidden sm:inline">Acheter Maintenant</span>
-                <span className="sm:hidden">Acheter</span>
-                <ShoppingBag size={14} strokeWidth={2} />
+                <span className="hidden xs:inline">Acheter Maintenant</span>
+                <span className="xs:hidden">Acheter</span>
+                <ShoppingBag size={12} xs:size={14} strokeWidth={2} />
               </span>
               <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </button>
@@ -558,12 +559,40 @@ export default function WheelHero({
       </div>
 
       <style>{`
+        :root {
+          --wheel-depth: 180px;
+          --wheel-height: 220px;
+        }
+        @media (min-width: 640px) {
+          :root {
+            --wheel-depth: 250px;
+            --wheel-height: 300px;
+          }
+        }
+        @media (min-width: 768px) {
+          :root {
+            --wheel-depth: 350px;
+            --wheel-height: 400px;
+          }
+        }
+        @media (min-width: 1024px) {
+          :root {
+            --wheel-depth: 400px;
+            --wheel-height: 500px;
+          }
+        }
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-30px) rotate(1.5deg); }
+          50% { transform: translateY(-20px) rotate(1.5deg); }
         }
         .perspective-1200 {
           perspective: 1200px;
+        }
+        @media (max-width: 639px) {
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1.5deg); }
+          }
         }
       `}</style>
     </section>

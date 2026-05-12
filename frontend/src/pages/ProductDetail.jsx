@@ -223,6 +223,36 @@ export default function ProductDetail() {
           <PageRenderer page={cmsPageWithSlug} />
         </div>
       )}
+
+      {/* Sticky Mobile Action Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[50] p-4 bg-white/80 backdrop-blur-xl border-t border-stone-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center border border-stone-200 rounded-2xl bg-white overflow-hidden shrink-0">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="p-3 active:bg-stone-100 transition-colors"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            <span className="w-8 text-center font-medium text-sm">{quantity}</span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="p-3 active:bg-stone-100 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+
+          <button
+            onClick={() => addToCart({ ...product, quantity })}
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-somacan-800 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-somacan-800/20 active:scale-95 transition-transform"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            Ajouter au panier — {product.price * quantity} MAD
+          </button>
+        </div>
+      </div>
+      <div className="lg:hidden h-24" /> {/* Spacer for sticky bar */}
     </main>
   );
 }

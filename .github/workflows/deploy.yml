@@ -1,0 +1,45 @@
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /var/www/somacan-refactor
+            
+            # Pull latest changes
+            git pull origin main
+            
+            # Setup Backend
+            echo "Setting up Backend..."
+            cd backend
+            npm install --production
+            # Restart or start the process with PM2
+            pm2 delete somacan-backend || true
+            pm2 start server.js --name somacan-backend --env production
+            
+            # Setup Frontend
+            echo "Building Frontend..."
+            cd ../frontend
+            npm install
+            npm run build
+            
+            # Finalize
+            echo "Deployment successful!"

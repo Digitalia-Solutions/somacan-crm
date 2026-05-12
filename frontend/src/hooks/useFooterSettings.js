@@ -37,6 +37,27 @@ export const FOOTER_DEFAULTS = {
   },
 };
 
+function parseJsonField(value, fallback) {
+  if (value == null || value === '') return fallback;
+  if (typeof value !== 'string') return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function normalizeArray(value, fallback) {
+  const parsed = parseJsonField(value, fallback);
+  return Array.isArray(parsed) ? parsed : fallback;
+}
+
+function normalizeObject(value, fallback) {
+  const parsed = parseJsonField(value, fallback);
+  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : fallback;
+}
+
 export default function useFooterSettings() {
   const [footer, setFooter] = useState(FOOTER_DEFAULTS);
   const [loading, setLoading] = useState(true);
@@ -44,18 +65,26 @@ export default function useFooterSettings() {
   useEffect(() => {
     getFooterSettings()
       .then(data => {
+        const logo = normalizeObject(data.logo, FOOTER_DEFAULTS.logo);
+        const columns = normalizeArray(data.columns, FOOTER_DEFAULTS.columns);
+        const socials = normalizeArray(data.socials, FOOTER_DEFAULTS.socials);
+        const newsletter = normalizeObject(data.newsletter, FOOTER_DEFAULTS.newsletter);
+        const legal = normalizeObject(data.legal, FOOTER_DEFAULTS.legal);
+        const contact = normalizeObject(data.contact, FOOTER_DEFAULTS.contact);
+        const theme = normalizeObject(data.theme, FOOTER_DEFAULTS.theme);
+
         setFooter({
-          logo: { ...FOOTER_DEFAULTS.logo, ...(data.logo || {}) },
+          logo: { ...FOOTER_DEFAULTS.logo, ...logo },
           description: data.description || FOOTER_DEFAULTS.description,
-          columns: (data.columns && data.columns.length > 0) ? data.columns : FOOTER_DEFAULTS.columns,
-          socials: (data.socials && data.socials.length > 0) ? data.socials : FOOTER_DEFAULTS.socials,
-          newsletter: { ...FOOTER_DEFAULTS.newsletter, ...(data.newsletter || {}) },
+          columns: columns.length > 0 ? columns : FOOTER_DEFAULTS.columns,
+          socials: socials.length > 0 ? socials : FOOTER_DEFAULTS.socials,
+          newsletter: { ...FOOTER_DEFAULTS.newsletter, ...newsletter },
           legal: {
-            copyright: data.legal?.copyright || FOOTER_DEFAULTS.legal.copyright,
-            links: (data.legal?.links && data.legal.links.length > 0) ? data.legal.links : FOOTER_DEFAULTS.legal.links,
+            copyright: legal.copyright || FOOTER_DEFAULTS.legal.copyright,
+            links: Array.isArray(legal.links) && legal.links.length > 0 ? legal.links : FOOTER_DEFAULTS.legal.links,
           },
-          contact: { ...FOOTER_DEFAULTS.contact, ...(data.contact || {}) },
-          theme: { ...FOOTER_DEFAULTS.theme, ...(data.theme || {}) },
+          contact: { ...FOOTER_DEFAULTS.contact, ...contact },
+          theme: { ...FOOTER_DEFAULTS.theme, ...theme },
         });
       })
       .catch(() => {})
