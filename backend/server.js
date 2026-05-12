@@ -48,7 +48,7 @@ import './models/MenuItem.js';
 import './models/GlobalStylePreset.js';
 import './models/index.js';
 
-dotenv.config();
+dotenv.config(); 
 const app = express();
 
 app.use(cors());
