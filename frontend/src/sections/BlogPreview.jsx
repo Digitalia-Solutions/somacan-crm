@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight as ArrowRightIcon } from 'lucide-react';
 import { buildImageStyle, buildSectionLayoutStyle, buildTypographyStyle } from './sectionStyleUtils';
+import { API_BASE_URL } from '../lib/api';
 
 export default function BlogPreview({
   eyebrow,
@@ -38,7 +39,7 @@ export default function BlogPreview({
   });
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/blogs')
+    fetch(`${API_BASE_URL}/blogs`)
       .then(r => r.json())
       .then(data => {
         const items = Array.isArray(data) ? data : (data.blogs || []);

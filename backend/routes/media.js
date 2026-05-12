@@ -2,14 +2,18 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import Media from '../models/Media.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { Op } from 'sequelize';
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, '../public/uploads');
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, 'public/uploads/'),
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {
     const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, unique + path.extname(file.originalname));
@@ -79,7 +83,7 @@ router.delete('/:id', requireAdmin, async (req, res) => {
     const media = await Media.findByPk(req.params.id);
     if (!media) return res.status(404).json({ message: 'Media not found' });
     // Delete physical file
-    const filePath = 'public' + media.url.replace('/public', '');
+    const filePath = path.join(__dirname, '../public', media.url.replace('/public/', ''));
     try { fs.unlinkSync(filePath); } catch { /* file may not exist */ }
     await media.destroy();
     return res.json({ message: 'Deleted' });

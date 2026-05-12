@@ -12,6 +12,7 @@ import {
 import { getFMVariants, isGSAPAnimation } from '../AnimationEngine';
 import { motion } from 'framer-motion';
 import useGSAPScrollAnimation, { useGSAPStaggerReveal } from './useGSAPScrollAnimation';
+import { API_BASE_URL } from '../../lib/api';
 
 /**
  * WidgetShell
@@ -375,7 +376,7 @@ function ProductShowcaseWidgetRenderer({ widget }) {
     const params = new URLSearchParams();
     params.set('limit', limit);
     if (categoryId) params.set('categoryId', categoryId);
-    fetch(`http://localhost:5001/api/products?${params}`)
+    fetch(`${API_BASE_URL}/products?${params}`)
       .then(r => r.json())
       .then(data => {
         const items = Array.isArray(data) ? data : (data.products || data.items || []);
@@ -430,7 +431,7 @@ function CategoryGridWidgetRenderer({ widget }) {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    fetch('http://localhost:5001/api/categories')
+    fetch(`${API_BASE_URL}/categories`)
       .then(r => r.json())
       .then(data => {
         const items = Array.isArray(data) ? data : (data.categories || []);

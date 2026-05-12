@@ -4,7 +4,7 @@ const assetModules = import.meta.glob('../public/asset/*', {
 });
 
 const assetUrlMap = new Map();
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const backendOrigin = API_BASE_URL.replace(/\/api\/?$/, '');
 
 for (const [modulePath, resolvedUrl] of Object.entries(assetModules)) {

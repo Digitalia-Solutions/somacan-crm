@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import sequelize from './config/database.js';
 
 // Import Routes
@@ -48,13 +50,17 @@ import './models/MenuItem.js';
 import './models/GlobalStylePreset.js';
 import './models/index.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const publicDir = path.join(__dirname, 'public');
+
 dotenv.config(); 
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
-app.use('/public', express.static('public'));
+app.use('/public', express.static(publicDir));
 
 // Routes
 app.use('/api/auth', authRoutes);
